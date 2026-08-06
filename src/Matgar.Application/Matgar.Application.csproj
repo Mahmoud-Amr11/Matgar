@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Matgar.Domain\Matgar.Domain.csproj" />
+    <ProjectReference Include="..\Matgar.Infrastructure\Matgar.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\" />
+    <Folder Include="Abstractions\" />
+  </ItemGroup>
+
 </Project>
