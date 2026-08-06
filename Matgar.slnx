@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Matgar.Api/Matgar.Api.csproj" />
+    <Project Path="src/Matgar.Application/Matgar.Application.csproj" />
+    <Project Path="src/Matgar.Domain/Matgar.Domain.csproj" />
+    <Project Path="src/Matgar.Infrastructure/Matgar.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
