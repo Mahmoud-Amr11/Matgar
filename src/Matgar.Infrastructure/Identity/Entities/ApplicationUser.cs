@@ -2,10 +2,12 @@
 
 namespace Matgar.Infrastructure.Identity.Entities
 {
-    internal class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
+
+        public ICollection<RefreshToken> RefreshTokens { get; set; }
 
     }
 }
