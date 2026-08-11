@@ -1,6 +1,6 @@
 ﻿namespace Matgar.Application.Common.Results
 {
-    public sealed record Error(string? Code, string? Message, ErrorType errorType)
+    public sealed record Error(string? Code, string? Message, ErrorType? errorType)
     {
         public static readonly Error None = new(string.Empty, string.Empty, ErrorType.None);
         public static Error NotFound(

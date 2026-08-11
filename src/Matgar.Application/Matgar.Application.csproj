@@ -8,12 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Matgar.Domain\Matgar.Domain.csproj" />
-    <ProjectReference Include="..\Matgar.Infrastructure\Matgar.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Abstractions\" />
-    <Folder Include="Features\" />
   </ItemGroup>
 
   <ItemGroup>
