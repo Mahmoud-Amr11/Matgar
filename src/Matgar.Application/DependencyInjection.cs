@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using Matgar.Application.Behaviors;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -20,7 +22,7 @@ namespace Matgar.Application
             {
                 cfg.RegisterServicesFromAssemblies(assembly);
             });
-            //services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             services.AddValidatorsFromAssembly(assembly);
         }
     }

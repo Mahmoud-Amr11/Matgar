@@ -1,5 +1,10 @@
-﻿using Matgar.Infrastructure.Identity.Entities;
+﻿using Matgar.Application.Abstractions.Authentication;
+using Matgar.Application.Abstractions.Services;
+using Matgar.Infrastructure.Identity.Entities;
+using Matgar.Infrastructure.Identity.Services;
+using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
+using Matgar.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +18,8 @@ namespace Matgar.Infrastructure
         {
             AddPersistence(services, configuration);
             AddIdentity(services, configuration);
+            AddInfrastructureServices(services, configuration);
+
             return services;
         }
         private static IServiceCollection AddPersistence(IServiceCollection services, IConfiguration configuration)
@@ -21,6 +28,8 @@ namespace Matgar.Infrastructure
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
+
+
             return services;
         }
 
@@ -37,5 +46,14 @@ namespace Matgar.Infrastructure
                 .AddDefaultTokenProviders();
             return services;
         }
+
+        private static IServiceCollection AddInfrastructureServices(IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<EmailOptions>(configuration.GetSection("EmailSettings"));
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IIdentityService, IdentityService>();
+            return services;
+        }
     }
 }
+
