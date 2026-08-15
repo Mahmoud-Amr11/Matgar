@@ -2,6 +2,7 @@
 using Matgar.Application.Abstractions.Services;
 using Matgar.Infrastructure.Otions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using MimeKit;
 namespace Matgar.Infrastructure.Services
 {
@@ -9,9 +10,9 @@ namespace Matgar.Infrastructure.Services
     {
         private readonly EmailOptions _emailOptions;
 
-        public EmailService(EmailOptions emailOptions)
+        public EmailService(IOptions<EmailOptions> emailOptions)
         {
-            _emailOptions = emailOptions;
+            _emailOptions = emailOptions.Value;
         }
 
         public async Task SendAsync(string to, string subject, string body, List<IFormFile>? attachments = null)

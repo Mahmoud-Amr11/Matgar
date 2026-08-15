@@ -1,4 +1,5 @@
-﻿using Matgar.Application.Abstractions.Authentication;
+﻿using Hangfire;
+using Matgar.Application.Abstractions.Authentication;
 using Matgar.Application.Abstractions.Services;
 using Matgar.Infrastructure.Identity.Entities;
 using Matgar.Infrastructure.Identity.Services;
@@ -19,9 +20,21 @@ namespace Matgar.Infrastructure
             AddPersistence(services, configuration);
             AddIdentity(services, configuration);
             AddInfrastructureServices(services, configuration);
+            AddHangfire(services, configuration);
 
             return services;
         }
+
+        private static IServiceCollection AddHangfire(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"));
+            });
+            services.AddHangfireServer();
+            return services;
+        }
+
         private static IServiceCollection AddPersistence(IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -49,9 +62,10 @@ namespace Matgar.Infrastructure
 
         private static IServiceCollection AddInfrastructureServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<EmailOptions>(configuration.GetSection("EmailSettings"));
+            services.Configure<EmailOptions>(configuration.GetSection("EmailOptions"));
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IIdentityService, IdentityService>();
+
             return services;
         }
     }

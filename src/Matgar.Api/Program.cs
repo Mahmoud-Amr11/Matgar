@@ -1,4 +1,5 @@
 
+using Hangfire;
 using Matgar.Infrastructure;
 
 namespace Matgar.Api
@@ -31,7 +32,7 @@ namespace Matgar.Api
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.MapHangfireDashboard("/Hangfire");
 
             app.MapControllers();
 
