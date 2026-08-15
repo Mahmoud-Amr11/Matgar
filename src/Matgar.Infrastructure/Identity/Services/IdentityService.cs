@@ -26,6 +26,7 @@ namespace Matgar.Infrastructure.Identity.Services
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email,
+                UserName = userDto.Email
             };
 
             var result = await _userManager.CreateAsync(user, userDto.Password);

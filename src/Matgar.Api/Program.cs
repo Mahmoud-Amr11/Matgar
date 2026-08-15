@@ -1,6 +1,8 @@
 
 using Hangfire;
+using Matgar.Application;
 using Matgar.Infrastructure;
+using Matgar.Infrastructure.Services;
 
 namespace Matgar.Api
 {
@@ -18,7 +20,8 @@ namespace Matgar.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddInfrastructure(builder.Configuration)
+                .AddApplication();
 
             var app = builder.Build();
 
@@ -34,6 +37,13 @@ namespace Matgar.Api
             app.UseAuthorization();
             app.MapHangfireDashboard("/Hangfire");
 
+            var recurringJobManager =
+                app.Services.GetRequiredService<IRecurringJobManager>();
+
+            recurringJobManager.AddOrUpdate<OutboxProcessorJob>(
+                "process-outbox-messages",
+                job => job.ProcessOutboxMessages(),
+                Cron.Minutely);
             app.MapControllers();
 
             app.Run();

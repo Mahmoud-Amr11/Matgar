@@ -1,4 +1,5 @@
 ﻿using Matgar.Application.Abstractions.Repositories;
+using Matgar.Domain.Entities;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -6,16 +7,19 @@ namespace Matgar.Infrastructure.Persistence.Repositories
 {
     internal sealed class UnitOfWork : IUnitOfWork
     {
+
         private readonly ApplicationDbContext _context;
-
-        private IDbContextTransaction? _transaction;
-
 
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        private IDbContextTransaction? _transaction;
+
+        private IGenericRepository<OutboxMessage>? _outboxMessages;
+        public IGenericRepository<OutboxMessage> OutboxMessages =>
+            _outboxMessages ??= new GenericRepository<OutboxMessage>(_context);
 
 
         public async Task BeginTransactionAsync(
@@ -42,5 +46,8 @@ namespace Matgar.Infrastructure.Persistence.Repositories
             await _transaction!
                 .RollbackAsync(cancellationToken);
         }
+
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+           => await _context.SaveChangesAsync(cancellationToken);
     }
 }

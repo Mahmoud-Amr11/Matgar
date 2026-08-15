@@ -2,7 +2,10 @@
 using Matgar.Application.Abstractions.Repositories;
 using Matgar.Application.Common.Results;
 using Matgar.Application.DTOs;
+using Matgar.Application.Events;
+using Matgar.Domain.Entities;
 using MediatR;
+using System.Text.Json;
 
 namespace Matgar.Application.Features.Auth.Commands.Register
 {
@@ -20,25 +23,37 @@ namespace Matgar.Application.Features.Auth.Commands.Register
         {
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-            var creatUserResult = await _identityService.CreateUserAsync(new UserDto(request.FirstName, request.LastName, request.Email, request.Password));
+            var createUserResult = await _identityService.CreateUserAsync(
+                new UserDto(request.FirstName, request.LastName, request.Email, request.Password));
 
-            if (!creatUserResult.IsSuccess)
+            if (!createUserResult.IsSuccess)
             {
                 await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-                return creatUserResult;
+                return Result.Failure(createUserResult.Errors);
             }
 
-            var addRoleResult = await _identityService.AddToRoleAsync(request.Email, request.UserType.ToString());
+            var userId = createUserResult.Value;
 
+            var addRoleResult = await _identityService.AddToRoleAsync(request.Email, request.UserType.ToString());
             if (!addRoleResult.IsSuccess)
             {
                 await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-                return addRoleResult;
+                return Result.Failure(addRoleResult.Errors);
             }
 
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
             var confirmEmailResult = await _identityService.GenerateEmailConfirmationTokenAsync(request.Email);
 
+
+            var outboxMessage = new OutboxMessage
+            {
+                Type = nameof(UserRegisteredEvent),
+                Content = JsonSerializer.Serialize(new UserRegisteredEvent(
+                    userId, request.Email, confirmEmailResult))
+            };
+
+            await _unitOfWork.OutboxMessages.AddAsync(outboxMessage);
+
+            await _unitOfWork.CommitTransactionAsync(cancellationToken);
 
             return Result.Success;
         }

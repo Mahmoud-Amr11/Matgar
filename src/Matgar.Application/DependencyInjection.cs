@@ -16,7 +16,7 @@ namespace Matgar.Application
             return services;
         }
 
-        private static void AddMediatr(IServiceCollection services, Assembly assembly)
+        private static IServiceCollection AddMediatr(IServiceCollection services, Assembly assembly)
         {
             services.AddMediatR(cfg =>
             {
@@ -24,6 +24,7 @@ namespace Matgar.Application
             });
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             services.AddValidatorsFromAssembly(assembly);
+            return services;
         }
     }
 }

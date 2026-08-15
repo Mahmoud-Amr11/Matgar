@@ -1,10 +1,12 @@
 ﻿using Hangfire;
 using Matgar.Application.Abstractions.Authentication;
+using Matgar.Application.Abstractions.Repositories;
 using Matgar.Application.Abstractions.Services;
 using Matgar.Infrastructure.Identity.Entities;
 using Matgar.Infrastructure.Identity.Services;
 using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
+using Matgar.Infrastructure.Persistence.Repositories;
 using Matgar.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,15 @@ namespace Matgar.Infrastructure
             AddIdentity(services, configuration);
             AddInfrastructureServices(services, configuration);
             AddHangfire(services, configuration);
+
+
+            services.AddScoped<OutboxProcessorJob>();
+            services.AddScoped(
+            typeof(IGenericRepository<>),
+            typeof(GenericRepository<>));
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAppMailService, AppMailService>();
+            services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 
             return services;
         }
