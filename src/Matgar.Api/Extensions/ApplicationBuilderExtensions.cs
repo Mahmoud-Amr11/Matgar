@@ -13,7 +13,7 @@ namespace Matgar.Api.Extensions
 
             ConfigureSwagger(app);
             await app.Services.SeedDatabaseAsync();
-            //app.UseExceptionHandler();
+            app.UseExceptionHandler();
             //app.UseSerilogRequestLoggingWithDetails();
             app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();

@@ -7,7 +7,7 @@
 
             services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
+            services.AddProblemDetails();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
