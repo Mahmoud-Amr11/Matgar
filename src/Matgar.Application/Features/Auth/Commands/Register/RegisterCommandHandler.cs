@@ -34,7 +34,7 @@ namespace Matgar.Application.Features.Auth.Commands.Register
 
             var userId = createUserResult.Value;
 
-            var addRoleResult = await _identityService.AddToRoleAsync(request.Email, request.UserType.ToString());
+            var addRoleResult = await _identityService.AddToRoleAsync(request.Email, request.UserType.Value);
             if (!addRoleResult.IsSuccess)
             {
                 await _unitOfWork.RollbackTransactionAsync(cancellationToken);
@@ -54,6 +54,7 @@ namespace Matgar.Application.Features.Auth.Commands.Register
             await _unitOfWork.OutboxMessages.AddAsync(outboxMessage);
 
             await _unitOfWork.CommitTransactionAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result.Success;
         }

@@ -1,52 +1,52 @@
-
-using Hangfire;
+using Matgar.Api.Extensions;
 using Matgar.Application;
 using Matgar.Infrastructure;
-using Matgar.Infrastructure.Services;
+using Serilog;
+using Serilog.Events;
 
 namespace Matgar.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+               .WriteTo.Console()
+               .CreateLogger();
 
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddInfrastructure(builder.Configuration)
-                .AddApplication();
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            try
             {
-                app.MapSwagger();
-                app.MapSwaggerUI();
+
+                var builder = WebApplication.CreateBuilder(args);
+
+                builder.AddSerilogLogging();
+                builder.Services.AddApiServices().AddInfrastructure(builder.Configuration)
+                    .AddApplication();
+
+                var app = builder.Build();
+
+
+                if (app.Environment.IsDevelopment())
+                {
+                    app.MapSwagger();
+                    app.MapSwaggerUI();
+                }
+
+                await app.UseApiPipeline();
+
+                app.Run();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application start-up failed");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-            app.MapHangfireDashboard("/Hangfire");
-
-            var recurringJobManager =
-                app.Services.GetRequiredService<IRecurringJobManager>();
-
-            recurringJobManager.AddOrUpdate<OutboxProcessorJob>(
-                "process-outbox-messages",
-                job => job.ProcessOutboxMessages(),
-                Cron.Minutely);
-            app.MapControllers();
-
-            app.Run();
         }
     }
 }

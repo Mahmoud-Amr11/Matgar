@@ -7,6 +7,7 @@ using Matgar.Infrastructure.Identity.Services;
 using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Matgar.Infrastructure.Persistence.Repositories;
+using Matgar.Infrastructure.Persistence.Seeders;
 using Matgar.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,11 @@ namespace Matgar.Infrastructure
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAppMailService, AppMailService>();
             services.AddScoped<IBackgroundJobService, BackgroundJobService>();
+
+            services.AddScoped<IDataSeeder, RoleSeeder>();
+            services.AddScoped<IDataSeeder, AdminSeeder>();
+            services.AddScoped<DataSeederRunner>();
+
 
             return services;
         }
@@ -78,6 +84,17 @@ namespace Matgar.Infrastructure
             services.AddScoped<IIdentityService, IdentityService>();
 
             return services;
+        }
+
+        public static async Task SeedDatabaseAsync(
+           this IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+
+            var runner = scope.ServiceProvider
+                .GetRequiredService<DataSeederRunner>();
+
+            await runner.RunAsync();
         }
     }
 }
