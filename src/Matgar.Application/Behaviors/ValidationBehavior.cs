@@ -8,9 +8,9 @@ namespace Matgar.Application.Behaviors
         where TRequest : IRequest<TResponse>
         where TResponse : IResultFactory<TResponse>
     {
-        private readonly IEnumerable<IValidator<TResponse>> _validators;
+        private readonly IEnumerable<IValidator<TRequest>> _validators;
 
-        public ValidationBehavior(IEnumerable<IValidator<TResponse>> validators)
+        public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
         {
             _validators = validators;
         }

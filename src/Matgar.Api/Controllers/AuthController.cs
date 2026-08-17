@@ -1,4 +1,5 @@
-﻿using Matgar.Application.Features.Auth.Commands.Register;
+﻿using Matgar.Api.Common;
+using Matgar.Application.Features.Auth.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +20,7 @@ namespace Matgar.Api.Controllers
         public async Task<IActionResult> Register(RegisterCommand registerCommand, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(registerCommand, cancellationToken);
-            return result.IsSuccess ? Ok() : BadRequest(result.Errors);
+            return result.ToActionResult(this);
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+﻿using Matgar.Api.Common;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using System.Net;
@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace Matgar.Api.Middlewares
 {
-    public class GlobaleExceptionHandler(IProblemDetailsService _problemDetailsService, ILogger<GlobaleExceptionHandler> _logger) : IExceptionHandler
+    public class GlobalExceptionHandler(IProblemDetailsService _problemDetailsService, ILogger<GlobalExceptionHandler> _logger) : IExceptionHandler
     {
 
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -20,14 +20,8 @@ namespace Matgar.Api.Middlewares
 
             httpContext.Response.StatusCode = statusCode;
 
-            var problemDetails = new ProblemDetails
-            {
-                Status = statusCode,
-                Title = tittle,
-                Type = GetProblemType(statusCode),
-                Instance = httpContext.Request.Path,
-                Detail = GetSaferErrorMessage(exception, httpContext)
-            };
+            var problemDetails = AppProblemDetailsFactory.Create(
+                 httpContext, statusCode, tittle, GetSaferErrorMessage(exception, httpContext));
 
             problemDetails.Extensions["traceId"] = httpContext.TraceIdentifier;
             problemDetails.Extensions["timestamp"] = DateTime.UtcNow;
@@ -56,15 +50,7 @@ namespace Matgar.Api.Middlewares
                _ => ((int)HttpStatusCode.InternalServerError, "INTERNAL_ERROR")
 
            };
-        private static string GetProblemType(int statusCode) => statusCode switch
-        {
-            400 => "https://tools.ietf.org/html/rfc9110#section-15.5.1",
-            401 => "https://tools.ietf.org/html/rfc9110#section-15.5.2",
-            403 => "https://tools.ietf.org/html/rfc9110#section-15.5.4",
-            404 => "https://tools.ietf.org/html/rfc9110#section-15.5.5",
-            409 => "https://tools.ietf.org/html/rfc9110#section-15.5.10",
-            _ => "https://tools.ietf.org/html/rfc9110#section-15.6.1"
-        };
+
         private static string? GetSaferErrorMessage(Exception exception, HttpContext context)
         {
             var environment = context.RequestServices.GetRequiredService<IHostEnvironment>();
