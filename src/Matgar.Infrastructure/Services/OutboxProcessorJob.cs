@@ -27,7 +27,7 @@ namespace Matgar.Infrastructure.Services
                     if (message.Type == nameof(UserRegisteredEvent))
                     {
                         var evt = JsonSerializer.Deserialize<UserRegisteredEvent>(message.Content)!;
-                        await _emailSender.SendEmailConfirmationAsync(evt.Email, evt.EmailConfirmationToken);
+                        await _emailSender.SendEmailConfirmationAsync(evt.UserId, evt.Email, evt.EmailConfirmationToken);
                     }
 
                     message.ProcessedOn = DateTime.UtcNow;

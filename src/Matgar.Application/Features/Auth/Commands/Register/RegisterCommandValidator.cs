@@ -46,8 +46,6 @@ namespace Matgar.Application.Features.Auth.Commands.Register
                 .Equal(r => r.Password)
                 .WithMessage("Passwords do not match.");
 
-            RuleFor(r => r.UserType)
-                .IsInEnum();
         }
     }
 

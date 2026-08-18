@@ -1,7 +1,7 @@
-﻿using Matgar.Application.Abstractions.Authentication;
+﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
 using Matgar.Application.Common.Results;
-using Matgar.Application.DTOs;
+using Matgar.Application.DTOs.Authentication;
 using Matgar.Application.Events;
 using Matgar.Domain.Entities;
 using MediatR;
@@ -34,14 +34,14 @@ namespace Matgar.Application.Features.Auth.Commands.Register
 
             var userId = createUserResult.Value;
 
-            var addRoleResult = await _identityService.AddToRoleAsync(request.Email, request.UserType.Value);
+            var addRoleResult = await _identityService.AddToRoleAsync(userId, request.UserType.Value);
             if (!addRoleResult.IsSuccess)
             {
                 await _unitOfWork.RollbackTransactionAsync(cancellationToken);
                 return Result.Failure(addRoleResult.Errors);
             }
 
-            var confirmEmailResult = await _identityService.GenerateEmailConfirmationTokenAsync(request.Email);
+            var confirmEmailResult = await _identityService.GenerateEmailConfirmationTokenAsync(userId);
 
 
             var outboxMessage = new OutboxMessage

@@ -2,6 +2,6 @@
 {
     public interface IAppMailService
     {
-        Task SendEmailConfirmationAsync(string email, string confirmationLink);
+        Task SendEmailConfirmationAsync(string userId, string email, string token);
     }
 }

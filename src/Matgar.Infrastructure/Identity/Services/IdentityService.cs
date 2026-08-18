@@ -1,6 +1,6 @@
-﻿using Matgar.Application.Abstractions.Authentication;
+﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Common.Results;
-using Matgar.Application.DTOs;
+using Matgar.Application.DTOs.Authentication;
 using Matgar.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -16,7 +16,6 @@ namespace Matgar.Infrastructure.Identity.Services
         {
             _userManager = userManager;
         }
-
 
 
         public async Task<Result<string>> CreateUserAsync(UserDto userDto)
@@ -39,9 +38,9 @@ namespace Matgar.Infrastructure.Identity.Services
             return user.Id;
         }
 
-        public async Task<Result> AddToRoleAsync(string userEmail, string role)
+        public async Task<Result> AddToRoleAsync(string userId, string role)
         {
-            var user = await _userManager.FindByEmailAsync(userEmail);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user is null)
                 return Error.NotFound("User not found");
 
@@ -55,11 +54,36 @@ namespace Matgar.Infrastructure.Identity.Services
             return Result.Success;
         }
 
-        public async Task<string> GenerateEmailConfirmationTokenAsync(string userEmail)
+        public async Task<string> GenerateEmailConfirmationTokenAsync(string userId)
         {
-            var user = await _userManager.FindByEmailAsync(userEmail);
+            var user = await _userManager.FindByIdAsync(userId);
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
         }
+
+        public async Task<Result> ConfirmEmailAsync(string userId, string token)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                return Error.NotFound(message: "User not found.");
+
+            var decodedTokenBytes = WebEncoders.Base64UrlDecode(token);
+            var decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
+
+
+            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(IdentityErrorMapper.Map).ToList();
+                return Result.Failure(errors);
+            }
+
+            return Result.Success;
+
+        }
+
+
     }
 }

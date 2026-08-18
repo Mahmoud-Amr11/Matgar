@@ -1,18 +1,21 @@
 ﻿using Hangfire;
-using Matgar.Application.Abstractions.Authentication;
+using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
 using Matgar.Application.Abstractions.Services;
 using Matgar.Infrastructure.Identity.Entities;
 using Matgar.Infrastructure.Identity.Services;
+using Matgar.Infrastructure.Options;
 using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Matgar.Infrastructure.Persistence.Repositories;
 using Matgar.Infrastructure.Persistence.Seeders;
 using Matgar.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Matgar.Infrastructure
 {
@@ -20,10 +23,11 @@ namespace Matgar.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            AddPersistence(services, configuration);
-            AddIdentity(services, configuration);
-            AddInfrastructureServices(services, configuration);
-            AddHangfire(services, configuration);
+            services.AddPersistence(configuration).
+            AddIdentity(configuration).
+            AddInfrastructureServices(configuration).
+            AddHangfire(configuration).
+            AddJwtAuthentication(configuration);
 
 
             services.AddScoped<OutboxProcessorJob>();
@@ -42,7 +46,7 @@ namespace Matgar.Infrastructure
             return services;
         }
 
-        private static IServiceCollection AddHangfire(IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddHangfire(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHangfire(config =>
             {
@@ -52,7 +56,7 @@ namespace Matgar.Infrastructure
             return services;
         }
 
-        private static IServiceCollection AddPersistence(IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
             {
@@ -63,7 +67,7 @@ namespace Matgar.Infrastructure
             return services;
         }
 
-        private static IServiceCollection AddIdentity(IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddIdentity(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -77,15 +81,49 @@ namespace Matgar.Infrastructure
             return services;
         }
 
-        private static IServiceCollection AddInfrastructureServices(IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<EmailOptions>(configuration.GetSection("EmailOptions"));
+            services.Configure<JwtOptions>(configuration.GetSection("JwtSettings"));
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IAccessTokenService, AccessTokenService>();
 
             return services;
         }
+        private static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtSettings = configuration.GetSection("JwtOptions").Get<JwtOptions>();
 
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).
+            AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings.Key)),
+
+                    ClockSkew = TimeSpan.Zero
+
+                };
+
+            });
+
+
+            return services;
+        }
         public static async Task SeedDatabaseAsync(
            this IServiceProvider serviceProvider)
         {

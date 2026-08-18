@@ -1,4 +1,5 @@
 ﻿using Matgar.Api.Common;
+using Matgar.Application.Features.Auth.Commands.ConfirmEmail;
 using Matgar.Application.Features.Auth.Commands.Register;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,13 @@ namespace Matgar.Api.Controllers
         public async Task<IActionResult> Register(RegisterCommand registerCommand, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(registerCommand, cancellationToken);
+            return result.ToActionResult(this);
+        }
+
+        [HttpGet("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new ConfirmEmailCommand(userId, token), cancellationToken);
             return result.ToActionResult(this);
         }
     }
