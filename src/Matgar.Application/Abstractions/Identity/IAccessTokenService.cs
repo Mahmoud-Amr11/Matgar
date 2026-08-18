@@ -4,6 +4,6 @@ namespace Matgar.Application.Abstractions.Identity
 {
     public interface IAccessTokenService
     {
-        AccessTokenResult GenerateAccessToken(AccessTokenUserDto user, CancellationToken cancellationToken);
+        AccessTokenResult GenerateAccessToken(AccessTokenUserDto user);
     }
 }

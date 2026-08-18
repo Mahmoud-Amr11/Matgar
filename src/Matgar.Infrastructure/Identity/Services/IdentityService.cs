@@ -84,6 +84,48 @@ namespace Matgar.Infrastructure.Identity.Services
 
         }
 
+        public async Task<Result<AccessTokenUserDto>> ValidateCredentialsAsync(string email, string password)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return Error.Validation(
+                    "Email or Password is invalid");
 
+
+            if (await _userManager.IsLockedOutAsync(user))
+                return Error.Forbidden(
+                    "Account locked");
+
+            var validatPassword = await _userManager.CheckPasswordAsync(user, password);
+
+
+            if (!validatPassword)
+            {
+                await _userManager.AccessFailedAsync(user);
+                return Error.Validation(
+                    "Email or Password is invalid");
+            }
+
+
+
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+                return Error.Forbidden(
+                    "Please confirm your email");
+
+
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+
+            return await BuildUserTokenInfoAsync(user);
+        }
+
+        private async Task<AccessTokenUserDto> BuildUserTokenInfoAsync(ApplicationUser user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = await _userManager.GetClaimsAsync(user);
+
+            return new AccessTokenUserDto(user.Id, user.Email!, roles, claims);
+        }
     }
 }

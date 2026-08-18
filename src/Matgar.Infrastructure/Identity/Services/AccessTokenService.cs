@@ -16,7 +16,7 @@ namespace Matgar.Infrastructure.Identity.Services
         {
             _jwtOptions = options.Value;
         }
-        public AccessTokenResult GenerateAccessToken(AccessTokenUserDto user, CancellationToken cancellationToken)
+        public AccessTokenResult GenerateAccessToken(AccessTokenUserDto user)
         {
             var claims = new List<Claim> {
                 new (JwtRegisteredClaimNames.Sub,user.UserId),

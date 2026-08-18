@@ -84,7 +84,7 @@ namespace Matgar.Infrastructure
         private static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<EmailOptions>(configuration.GetSection("EmailOptions"));
-            services.Configure<JwtOptions>(configuration.GetSection("JwtSettings"));
+            services.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IAccessTokenService, AccessTokenService>();
