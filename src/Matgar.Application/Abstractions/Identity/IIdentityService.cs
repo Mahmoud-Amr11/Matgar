@@ -12,5 +12,6 @@ namespace Matgar.Application.Abstractions.Identity
         Task<Result> ConfirmEmailAsync(string userId, string Token);
 
         Task<Result<AccessTokenUserDto>> ValidateCredentialsAsync(string email, string password);
+        Task<Result<AccessTokenUserDto>> GetUserAsync(string userId);
     }
 }

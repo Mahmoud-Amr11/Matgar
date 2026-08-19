@@ -6,53 +6,50 @@ namespace Matgar.Api.Common
 
     public static class ResultExtensions
     {
-        public static IActionResult ToActionResult(this Result result, ControllerBase controller)
-            => result.IsSuccess
-                ? controller.Ok()
-                : CreateProblemResult(result.Errors, controller.HttpContext);
-
-        public static IActionResult ToActionResult<TValue>(this Result<TValue> result, ControllerBase controller)
-            => result.IsSuccess
-                ? controller.Ok(result.Value)
-                : CreateProblemResult(result.Errors, controller.HttpContext);
-
-        private static IActionResult CreateProblemResult(List<Error> errors, HttpContext httpContext)
+        public static IActionResult ToActionResult<T>(this Result<T> result)
         {
-            var errorType = errors[0].errorType ?? ErrorType.Failure;
-            var statusCode = MapStatusCode(errorType);
+            return result.IsSuccess
+                ? new OkObjectResult(result.Value)
+                : result.Errors.ToProblemDetailsResult();
+        }
 
-            var groupedErrors = errors
-                .GroupBy(e => e.Code ?? "Error")
-                .ToDictionary(g => g.Key, g => g.Select(e => e.Message ?? string.Empty).ToArray());
+        public static IActionResult ToActionResult(this Result result)
+        {
+            return result.IsSuccess
+                ? new NoContentResult()
+                : result.Errors.ToProblemDetailsResult();
+        }
 
-            var problemDetails = AppProblemDetailsFactory.Create(
-                httpContext,
-                statusCode,
-                title: MapTitle(errorType),
-                errors: groupedErrors);
+        public static ObjectResult ToProblemDetailsResult(this List<Error> errors)
+        {
+
+            var primaryError = errors.First();
+
+            var statusCode = primaryError.errorType switch
+            {
+                ErrorType.NotFound => StatusCodes.Status404NotFound,
+                ErrorType.Validation => StatusCodes.Status400BadRequest,
+                ErrorType.Conflict => StatusCodes.Status409Conflict,
+                ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
+                ErrorType.Forbidden => StatusCodes.Status403Forbidden,
+                _ => StatusCodes.Status500InternalServerError
+            };
+
+            var problemDetails = new ProblemDetails
+            {
+                Status = statusCode,
+                Title = primaryError.errorType.ToString(),
+                Detail = primaryError.Message,
+                Type = $"https://httpstatuses.io/{statusCode}",
+            };
+
+            problemDetails.Extensions["errors"] = errors.Select(x => new
+            {
+                x.Code,
+                x.Message
+            });
 
             return new ObjectResult(problemDetails) { StatusCode = statusCode };
         }
-
-        private static int MapStatusCode(ErrorType type) => type switch
-        {
-            ErrorType.Validation => StatusCodes.Status400BadRequest,
-            ErrorType.NotFound => StatusCodes.Status404NotFound,
-            ErrorType.Conflict => StatusCodes.Status409Conflict,
-            ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
-            ErrorType.Forbidden => StatusCodes.Status403Forbidden,
-            ErrorType.Failure => StatusCodes.Status400BadRequest,
-            _ => StatusCodes.Status500InternalServerError
-        };
-
-        private static string MapTitle(ErrorType type) => type switch
-        {
-            ErrorType.Validation => "One or more validation errors occurred.",
-            ErrorType.NotFound => "Resource not found.",
-            ErrorType.Conflict => "Conflict occurred.",
-            ErrorType.Unauthorized => "Unauthorized.",
-            ErrorType.Forbidden => "Forbidden.",
-            _ => "An error occurred."
-        };
     }
 }

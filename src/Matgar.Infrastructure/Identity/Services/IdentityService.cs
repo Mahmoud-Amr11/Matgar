@@ -88,7 +88,7 @@ namespace Matgar.Infrastructure.Identity.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null)
-                return Error.Validation(
+                return Error.Unauthorized(
                     "Email or Password is invalid");
 
 
@@ -102,7 +102,7 @@ namespace Matgar.Infrastructure.Identity.Services
             if (!validatPassword)
             {
                 await _userManager.AccessFailedAsync(user);
-                return Error.Validation(
+                return Error.Unauthorized(
                     "Email or Password is invalid");
             }
 
@@ -110,7 +110,7 @@ namespace Matgar.Infrastructure.Identity.Services
 
 
             if (!await _userManager.IsEmailConfirmedAsync(user))
-                return Error.Forbidden(
+                return Error.Unauthorized(
                     "Please confirm your email");
 
 
@@ -119,6 +119,16 @@ namespace Matgar.Infrastructure.Identity.Services
 
             return await BuildUserTokenInfoAsync(user);
         }
+        public async Task<Result<AccessTokenUserDto>> GetUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+                return Error.NotFound(message: "User not found");
+
+            return await BuildUserTokenInfoAsync(user);
+        }
+
+
 
         private async Task<AccessTokenUserDto> BuildUserTokenInfoAsync(ApplicationUser user)
         {
@@ -127,5 +137,7 @@ namespace Matgar.Infrastructure.Identity.Services
 
             return new AccessTokenUserDto(user.Id, user.Email!, roles, claims);
         }
+
+
     }
 }

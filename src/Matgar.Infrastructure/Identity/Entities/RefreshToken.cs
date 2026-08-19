@@ -8,7 +8,7 @@
         public DateTime CreatedOn { get; set; }
         public DateTime? RevokedOn { get; set; }
 
-        public string UserID { get; set; }
+        public string UserId { get; set; }
         public ApplicationUser User { get; set; }
 
         public bool IsExpired => DateTime.Now > ExpiresOn;
