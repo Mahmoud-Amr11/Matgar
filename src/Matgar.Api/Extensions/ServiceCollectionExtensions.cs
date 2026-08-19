@@ -1,4 +1,5 @@
-﻿using Matgar.Api.Middlewares;
+﻿using Asp.Versioning;
+using Matgar.Api.Middlewares;
 
 namespace Matgar.Api.Extensions
 {
@@ -23,7 +24,18 @@ namespace Matgar.Api.Extensions
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddExceptionHandler<GlobalExceptionHandler>();
-
+            services.AddApiVersioning(options =>
+              {
+                  options.DefaultApiVersion = new ApiVersion(1, 0);
+                  options.AssumeDefaultVersionWhenUnspecified = true;
+                  options.ReportApiVersions = true; // بيرجع headers توضح النسخ المتاحة
+                  options.ApiVersionReader = new UrlSegmentApiVersionReader(); // النسخة من الـ URL
+              })
+                  .AddApiExplorer(options =>
+                  {
+                      options.GroupNameFormat = "'v'VVV";
+                      options.SubstituteApiVersionInUrl = true;
+                  });
 
             return services;
 

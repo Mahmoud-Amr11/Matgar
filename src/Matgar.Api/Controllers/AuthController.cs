@@ -1,4 +1,5 @@
-﻿using Matgar.Api.Common;
+﻿using Asp.Versioning;
+using Matgar.Api.Common;
 using Matgar.Application.Features.Auth.Commands.ConfirmEmail;
 using Matgar.Application.Features.Auth.Commands.Login;
 using Matgar.Application.Features.Auth.Commands.Register;
@@ -7,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Matgar.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
