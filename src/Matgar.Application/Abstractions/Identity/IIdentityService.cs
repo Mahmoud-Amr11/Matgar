@@ -13,5 +13,7 @@ namespace Matgar.Application.Abstractions.Identity
 
         Task<Result<AccessTokenUserDto>> ValidateCredentialsAsync(string email, string password);
         Task<Result<AccessTokenUserDto>> GetUserAsync(string userId);
+
+        Task<Result> ChangePasswordAsync(string userId, string currentPassword, string newPassword);
     }
 }

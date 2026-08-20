@@ -1,13 +1,16 @@
 ﻿using Asp.Versioning;
 using Matgar.Api.Common;
 using Matgar.Application.Common.Results;
+using Matgar.Application.Features.Auth.Commands.ChangePassword;
 using Matgar.Application.Features.Auth.Commands.ConfirmEmail;
 using Matgar.Application.Features.Auth.Commands.Login;
+using Matgar.Application.Features.Auth.Commands.Logout;
 using Matgar.Application.Features.Auth.Commands.RefreshToken;
 using Matgar.Application.Features.Auth.Commands.Register;
 using Matgar.Application.Features.Auth.Commands.RevokeToken;
 using Matgar.Application.Features.Auth.Responses;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Matgar.Api.Controllers
@@ -99,6 +102,23 @@ namespace Matgar.Api.Controllers
             var refreshToken = token ?? Request.Cookies["__Host-refreshToken"];
             var result = await _mediator.Send(new RevokeTokenCommand(refreshToken));
             Response.Cookies.Delete("__Host-refreshToken");
+            return result.ToActionResult();
+        }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordCommand request)
+        {
+            var result = await _mediator.Send(request);
+            return result.ToActionResult();
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+        {
+
+            var result = await _mediator.Send(new LogoutCommand(), cancellationToken);
+            Response.Cookies.Delete("refreshToken");
             return result.ToActionResult();
         }
         private void SetRefreshTokenInCookies(string refreshToken, DateTime expiresAt)

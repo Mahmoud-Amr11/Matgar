@@ -89,7 +89,7 @@ namespace Matgar.Infrastructure.Identity.Services
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null)
                 return Error.Unauthorized(
-                    "Email or Password is invalid");
+                    message: "Email or Password is invalid");
 
 
             if (await _userManager.IsLockedOutAsync(user))
@@ -103,7 +103,7 @@ namespace Matgar.Infrastructure.Identity.Services
             {
                 await _userManager.AccessFailedAsync(user);
                 return Error.Unauthorized(
-                    "Email or Password is invalid");
+                    message: "Email or Password is invalid");
             }
 
 
@@ -111,7 +111,7 @@ namespace Matgar.Infrastructure.Identity.Services
 
             if (!await _userManager.IsEmailConfirmedAsync(user))
                 return Error.Unauthorized(
-                    "Please confirm your email");
+                    message: "Please confirm your email");
 
 
             await _userManager.ResetAccessFailedCountAsync(user);
@@ -138,6 +138,21 @@ namespace Matgar.Infrastructure.Identity.Services
             return new AccessTokenUserDto(user.Id, user.Email!, roles, claims);
         }
 
+        public async Task<Result> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null) return Error.Unauthorized();
 
+
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(IdentityErrorMapper.Map).ToList();
+                return Result.Failure(errors);
+            }
+
+            return Result.Success;
+        }
     }
 }

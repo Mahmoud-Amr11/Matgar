@@ -89,7 +89,7 @@ namespace Matgar.Infrastructure
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IAccessTokenService, AccessTokenService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
-
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
             return services;
         }
         private static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)

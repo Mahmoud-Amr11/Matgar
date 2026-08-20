@@ -12,7 +12,7 @@ namespace Matgar.Infrastructure.Identity.Services
         {
             _contextAccessor = contextAccessor;
         }
-        public string? UserId => User?.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+        public string? UserId => User?.FindFirstValue(ClaimTypes.NameIdentifier)?.ToString();
 
 
 
