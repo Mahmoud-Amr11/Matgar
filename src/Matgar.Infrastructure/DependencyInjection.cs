@@ -64,6 +64,7 @@ namespace Matgar.Infrastructure
             });
 
 
+
             return services;
         }
 
@@ -90,6 +91,7 @@ namespace Matgar.Infrastructure
             services.AddScoped<IAccessTokenService, AccessTokenService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             return services;
         }
         private static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)

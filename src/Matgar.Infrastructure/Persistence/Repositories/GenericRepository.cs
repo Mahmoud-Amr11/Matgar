@@ -26,6 +26,9 @@ namespace Matgar.Infrastructure.Persistence.Repositories
 
         public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
             => await _dbSet.Where(predicate).ToListAsync(cancellationToken);
+
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+                   => await _dbSet.AnyAsync(predicate);
         public void Update(T entity) => _dbSet.Update(entity);
 
         public void Remove(T entity) => _dbSet.Remove(entity);
