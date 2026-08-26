@@ -7,6 +7,7 @@ namespace Matgar.Application.Features.Category.Commands.CreateCategory
         public CreateCategoryCommandValidator()
         {
             RuleFor(c => c.Name)
+                .Cascade(CascadeMode.Stop)
             .NotEmpty()
                 .WithMessage("Category name cannot be empty.")
             .MinimumLength(3)
