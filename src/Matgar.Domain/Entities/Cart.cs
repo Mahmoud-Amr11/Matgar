@@ -1,6 +1,6 @@
 ﻿namespace Matgar.Domain.Entities
 {
-    public class Cart
+    public class Cart : BaseAuditEntity
     {
         public Guid Id { get; set; }
         public Guid? UserId { get; set; }

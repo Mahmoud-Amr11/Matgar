@@ -2,7 +2,7 @@
 
 namespace Matgar.Domain.Entities
 {
-    public class Coupon
+    public class Coupon : BaseAuditEntity
     {
         public Guid Id { get; set; }
         public string Code { get; set; } = string.Empty;

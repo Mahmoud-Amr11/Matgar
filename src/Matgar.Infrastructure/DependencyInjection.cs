@@ -7,6 +7,7 @@ using Matgar.Infrastructure.Identity.Services;
 using Matgar.Infrastructure.Options;
 using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
+using Matgar.Infrastructure.Persistence.Interceptor;
 using Matgar.Infrastructure.Persistence.Repositories;
 using Matgar.Infrastructure.Persistence.Seeders;
 using Matgar.Infrastructure.Services;
@@ -58,9 +59,14 @@ namespace Matgar.Infrastructure
 
         private static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddScoped<AuditSaveChangesInterceptor>();
+
+
+            services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+
+                options.AddInterceptors(serviceProvider.GetRequiredService<AuditSaveChangesInterceptor>());
             });
 
 

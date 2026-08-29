@@ -1,6 +1,6 @@
 ﻿namespace Matgar.Domain.Entities
 {
-    public class Address
+    public class Address : BaseAuditEntity
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
@@ -10,6 +10,6 @@
         public string PhoneNumber { get; set; } = string.Empty;
         public bool IsDefault { get; set; } = false;
 
-       
+
     }
 }

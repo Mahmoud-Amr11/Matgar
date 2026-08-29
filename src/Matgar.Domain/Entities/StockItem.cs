@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Matgar.Domain.Entities
 {
-    public class StockItem
+    public class StockItem : BaseAuditEntity
     {
         public Guid Id { get; set; }
         public Guid ProductVariantId { get; set; }

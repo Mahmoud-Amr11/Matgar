@@ -1,6 +1,6 @@
 ﻿namespace Matgar.Domain.Entities
 {
-    public class ProductVariant
+    public class ProductVariant : BaseAuditEntity
     {
         public Guid Id { get; set; }
         public Guid ProductId { get; set; }

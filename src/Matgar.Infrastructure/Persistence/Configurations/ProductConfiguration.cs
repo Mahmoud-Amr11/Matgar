@@ -24,12 +24,10 @@ namespace Matgar.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasConversion<string>();
 
-            builder.Property(p => p.CreatedAt)
-                .IsRequired()
-                .HasDefaultValueSql("GETDATE()");
 
 
-            builder.HasQueryFilter(p => !p.IsDeleted);
+
+            builder.HasQueryFilter(p => p.IsDeleted == false);
 
 
             builder.HasIndex(p => p.VendorId);

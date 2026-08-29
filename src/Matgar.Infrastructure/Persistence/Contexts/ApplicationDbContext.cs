@@ -22,6 +22,7 @@ namespace Matgar.Infrastructure.Persistence.Contexts
         public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+        public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,6 +1,6 @@
 ﻿namespace Matgar.Domain.Entities
 {
-    public class Category
+    public class Category : BaseAuditEntity
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
