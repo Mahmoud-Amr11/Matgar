@@ -28,7 +28,7 @@ namespace Matgar.Infrastructure.Identity.Services
 
             claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            var expiresAt = DateTime.Now.AddMinutes(_jwtOptions.AccessTokenDurationMinutes);
+            var expiresAt = DateTime.UtcNow.AddMinutes(_jwtOptions.AccessTokenDurationMinutes);
             var key = new SymmetricSecurityKey(
              Encoding.UTF8.GetBytes(_jwtOptions.Key));
 

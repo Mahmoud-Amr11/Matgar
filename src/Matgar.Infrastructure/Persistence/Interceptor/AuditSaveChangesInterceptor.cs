@@ -25,8 +25,10 @@ namespace Matgar.Infrastructure.Persistence.Interceptor
             if (context is null)
                 return;
 
-            var now = DateTime.Now;
-            var userId = _currentUserService.UserId;
+            var now = DateTime.UtcNow;
+            var userId = string.IsNullOrWhiteSpace(_currentUserService.UserId)
+                    ? "System"
+                    : _currentUserService.UserId;
 
             SetAuditFields(context, userId, now);
 

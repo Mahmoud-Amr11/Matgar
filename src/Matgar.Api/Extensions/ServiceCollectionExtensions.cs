@@ -28,8 +28,8 @@ namespace Matgar.Api.Extensions
               {
                   options.DefaultApiVersion = new ApiVersion(1, 0);
                   options.AssumeDefaultVersionWhenUnspecified = true;
-                  options.ReportApiVersions = true; // بيرجع headers توضح النسخ المتاحة
-                  options.ApiVersionReader = new UrlSegmentApiVersionReader(); // النسخة من الـ URL
+                  options.ReportApiVersions = true;
+                  options.ApiVersionReader = new UrlSegmentApiVersionReader();
               })
                   .AddApiExplorer(options =>
                   {

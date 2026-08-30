@@ -1,5 +1,6 @@
 ﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Common.Enums;
 using Matgar.Application.Common.Results;
 using Matgar.Application.DTOs.Authentication;
 using Matgar.Application.Events;
@@ -23,40 +24,44 @@ namespace Matgar.Application.Features.Auth.Commands.Register
         {
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-            var createUserResult = await _identityService.CreateUserAsync(
-                new UserDto(request.FirstName, request.LastName, request.Email, request.Password));
+            try
+            {
+                var createUserResult = await _identityService.CreateUserAsync(
+                    new UserDto(request.FirstName, request.LastName, request.Email, request.Password));
 
-            if (!createUserResult.IsSuccess)
+                if (!createUserResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    return Result<string>.Failure(createUserResult.Errors);
+                }
+
+                var userId = createUserResult.Value;
+
+                var addRoleResult = await _identityService.AddToRoleAsync(userId, UserType.Customer.Value);
+                if (!addRoleResult.IsSuccess)
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    return Result<string>.Failure(addRoleResult.Errors);
+                }
+
+                var confirmEmailToken = await _identityService.GenerateEmailConfirmationTokenAsync(userId);
+
+                var outboxMessage = new OutboxMessage
+                {
+                    Type = nameof(UserRegisteredEvent),
+                    Content = JsonSerializer.Serialize(new UserRegisteredEvent(userId, request.Email, confirmEmailToken))
+                };
+
+                await _unitOfWork.OutboxMessages.AddAsync(outboxMessage);
+                await _unitOfWork.CommitTransactionAsync(cancellationToken);
+                return Result.Success;
+            }
+            catch
             {
                 await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-                return Result.Failure(createUserResult.Errors);
+                throw;
             }
-
-            var userId = createUserResult.Value;
-
-            var addRoleResult = await _identityService.AddToRoleAsync(userId, request.UserType.Value);
-            if (!addRoleResult.IsSuccess)
-            {
-                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-                return Result.Failure(addRoleResult.Errors);
-            }
-
-            var confirmEmailResult = await _identityService.GenerateEmailConfirmationTokenAsync(userId);
-
-
-            var outboxMessage = new OutboxMessage
-            {
-                Type = nameof(UserRegisteredEvent),
-                Content = JsonSerializer.Serialize(new UserRegisteredEvent(
-                    userId, request.Email, confirmEmailResult))
-            };
-
-            await _unitOfWork.OutboxMessages.AddAsync(outboxMessage);
-
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return Result.Success;
         }
     }
 }
+

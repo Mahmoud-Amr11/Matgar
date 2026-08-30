@@ -28,7 +28,7 @@ namespace Matgar.Infrastructure.Identity.Services
 
             var hashToken = HashToken(token);
 
-            var expiresAt = DateTime.Now.AddDays(
+            var expiresAt = DateTime.UtcNow.AddDays(
                 _jwtOptions.RefreshTokenDurationDays);
 
             var refreshToken = new RefreshToken
@@ -39,7 +39,7 @@ namespace Matgar.Infrastructure.Identity.Services
 
                 UserId = userId,
 
-                CreatedOn = DateTime.Now,
+                CreatedOn = DateTime.UtcNow,
 
                 ExpiresOn = expiresAt
             };
@@ -74,7 +74,7 @@ namespace Matgar.Infrastructure.Identity.Services
             if (oldToken.IsExpired)
                 return Error.Unauthorized(message: "Invalid refresh token");
 
-            oldToken.RevokedOn = DateTime.Now;
+            oldToken.RevokedOn = DateTime.UtcNow;
 
             var newToken = await GenerateAndStoreRefreshTokenAsync(oldToken.UserId, cancellationToken);
             return new RefreshTokenRotationResult(oldToken.UserId, newToken.Token, newToken.ExpiresAt);
@@ -86,12 +86,8 @@ namespace Matgar.Infrastructure.Identity.Services
             var activeTokens = await _context.RefreshTokens.Where(t => t.UserId == userId && t.RevokedOn == null)
                 .ToListAsync(cancellationToken);
 
-
-            if (activeTokens.Any())
-            {
-                foreach (var activeToken in activeTokens)
-                    activeToken.RevokedOn = DateTime.Now;
-            }
+            foreach (var activeToken in activeTokens)
+                activeToken.RevokedOn = DateTime.UtcNow;
 
 
             await _context.SaveChangesAsync(cancellationToken);

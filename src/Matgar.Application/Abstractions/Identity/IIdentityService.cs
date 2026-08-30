@@ -7,7 +7,7 @@ namespace Matgar.Application.Abstractions.Identity
     {
 
         Task<Result<string>> CreateUserAsync(UserDto userDto);
-        Task<Result> AddToRoleAsync(string userEmail, string role);
+        Task<Result> AddToRoleAsync(string userId, string role);
         Task<string> GenerateEmailConfirmationTokenAsync(string userEmail);
         Task<Result> ConfirmEmailAsync(string userId, string Token);
 

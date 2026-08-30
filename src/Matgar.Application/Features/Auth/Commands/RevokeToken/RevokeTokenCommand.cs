@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Matgar.Application.Features.Auth.Commands.RevokeToken
 {
-    public sealed record RevokeTokenCommand(string? token) : IRequest<Result>;
+    public sealed record RevokeTokenCommand(string? Token) : IRequest<Result>;
 }

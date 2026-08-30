@@ -57,6 +57,7 @@ namespace Matgar.Infrastructure.Identity.Services
         public async Task<string> GenerateEmailConfirmationTokenAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
+
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
         }
@@ -68,9 +69,18 @@ namespace Matgar.Infrastructure.Identity.Services
             if (user is null)
                 return Error.NotFound(message: "User not found.");
 
-            var decodedTokenBytes = WebEncoders.Base64UrlDecode(token);
-            var decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
-
+            string decodedToken;
+            try
+            {
+                var decodedTokenBytes = WebEncoders.Base64UrlDecode(token);
+                decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
+            }
+            catch (FormatException)
+            {
+                return Error.Validation(
+                    code: "InvalidToken",
+                    message: "Confirmation link is invalid or expired");
+            }
 
             var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
 
@@ -96,10 +106,10 @@ namespace Matgar.Infrastructure.Identity.Services
                 return Error.Forbidden(
                     "Account locked");
 
-            var validatPassword = await _userManager.CheckPasswordAsync(user, password);
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, password);
 
 
-            if (!validatPassword)
+            if (!isPasswordValid)
             {
                 await _userManager.AccessFailedAsync(user);
                 return Error.Unauthorized(

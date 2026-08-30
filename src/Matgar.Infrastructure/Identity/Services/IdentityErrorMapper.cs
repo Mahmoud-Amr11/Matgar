@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Matgar.Infrastructure.Identity.Services
 {
-    internal class IdentityErrorMapper
+    internal static class IdentityErrorMapper
     {
         public static Error Map(IdentityError error)
         {

@@ -15,11 +15,11 @@ namespace Matgar.Application.Features.Auth.Commands.RevokeToken
 
         public async Task<Result> Handle(RevokeTokenCommand request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.token))
+            if (string.IsNullOrEmpty(request.Token))
                 return Error.Unauthorized("InvalidCredentials", "Invalid authentication credentials");
 
 
-            return await _tokenService.RevokeTokenAsync(request.token, cancellationToken);
+            return await _tokenService.RevokeTokenAsync(request.Token, cancellationToken);
         }
     }
 }

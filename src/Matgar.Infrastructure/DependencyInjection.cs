@@ -91,7 +91,7 @@ namespace Matgar.Infrastructure
         private static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<EmailOptions>(configuration.GetSection("EmailOptions"));
-            services.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
+            services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IAccessTokenService, AccessTokenService>();
@@ -102,7 +102,7 @@ namespace Matgar.Infrastructure
         }
         private static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            var jwtSettings = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+            var jwtSettings = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
 
 
             services.AddAuthentication(options =>
