@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace HealthySmile.Application.Common.Behaviors
+namespace Matgar.Application.Common.Behaviors
 {
     public class LoggingBehavior<TRequest, TResponse>
        : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>

@@ -3,6 +3,7 @@ using Matgar.Api.Common;
 using Matgar.Api.Requests.Categories;
 using Matgar.Application.Features.Category.Commands.CreateCategory;
 using Matgar.Application.Features.Category.Commands.DeleteCategory;
+using Matgar.Application.Features.Category.Query.GetCategoryById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,15 @@ namespace Matgar.Api.Controllers
         public CategoriesController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new GetCategoryByIdQuery(id), cancellationToken);
+            return result.ToActionResult();
         }
 
         [HttpPost]

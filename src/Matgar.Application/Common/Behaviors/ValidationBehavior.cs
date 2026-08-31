@@ -2,7 +2,7 @@
 using Matgar.Application.Common.Results;
 using MediatR;
 
-namespace Matgar.Application.Behaviors
+namespace Matgar.Application.Common.Behaviors
 {
     internal class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>

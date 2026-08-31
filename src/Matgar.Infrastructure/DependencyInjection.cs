@@ -1,7 +1,9 @@
 ﻿using Hangfire;
+using Matgar.Application.Abstractions.Dapper;
 using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
 using Matgar.Application.Abstractions.Services;
+using Matgar.Application.Common.Caching;
 using Matgar.Infrastructure.Identity.Entities;
 using Matgar.Infrastructure.Identity.Services;
 using Matgar.Infrastructure.Options;
@@ -70,7 +72,13 @@ namespace Matgar.Infrastructure
             });
 
 
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration.GetConnectionString("Redis");
+            });
 
+
+            services.AddScoped<ICacheService, CacheService>();
             return services;
         }
 
@@ -98,6 +106,8 @@ namespace Matgar.Infrastructure
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddSingleton<IDbConnectionFactory, DapperConnectionFactory>();
+
             return services;
         }
         private static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
