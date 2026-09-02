@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Matgar.Application.Abstractions.Dapper;
 using Matgar.Application.Abstractions.Identity;
+using Matgar.Application.Abstractions.Queries.Category;
 using Matgar.Application.Abstractions.Repositories;
 using Matgar.Application.Abstractions.Services;
 using Matgar.Application.Common.Caching;
@@ -10,6 +11,7 @@ using Matgar.Infrastructure.Options;
 using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Matgar.Infrastructure.Persistence.Interceptor;
+using Matgar.Infrastructure.Persistence.Queries.Category;
 using Matgar.Infrastructure.Persistence.Repositories;
 using Matgar.Infrastructure.Persistence.Seeders;
 using Matgar.Infrastructure.Services;
@@ -44,6 +46,7 @@ namespace Matgar.Infrastructure
             services.AddScoped<IDataSeeder, RoleSeeder>();
             services.AddScoped<IDataSeeder, AdminSeeder>();
             services.AddScoped<DataSeederRunner>();
+            services.AddScoped<ICategoryQueries, CategoryQueries>();
 
 
             return services;
