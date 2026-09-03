@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Matgar.Application.Features.Category.Commands.UpdateCategory
 {
-    public sealed record UpdateCategoryCommmand(Guid CategoryId) : IRequest<Result>;
+    public sealed record UpdateCategoryCommand(Guid CategoryId, string NewName) : IRequest<Result>;
 }

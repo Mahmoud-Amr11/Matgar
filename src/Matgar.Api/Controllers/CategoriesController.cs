@@ -3,6 +3,7 @@ using Matgar.Api.Common;
 using Matgar.Api.Requests.Categories;
 using Matgar.Application.Features.Category.Commands.CreateCategory;
 using Matgar.Application.Features.Category.Commands.DeleteCategory;
+using Matgar.Application.Features.Category.Commands.UpdateCategory;
 using Matgar.Application.Features.Category.Query.GetAllCategories;
 using Matgar.Application.Features.Category.Query.GetCategoryById;
 using MediatR;
@@ -50,12 +51,26 @@ namespace Matgar.Api.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create([FromBody] CreateOrUpdateCategoryRequest request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new CreateCategoryCommand(request.CategoryName), cancellationToken);
 
             return result.ToActionResult();
         }
+
+        [HttpPut("{CategoryId:Guid}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(Guid CategoryId, [FromBody] CreateOrUpdateCategoryRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new UpdateCategoryCommand(CategoryId, request.CategoryName), cancellationToken);
+
+            return result.ToActionResult();
+        }
+
+
+
+
+
         [HttpDelete("{CategoryId:Guid}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid CategoryId, CancellationToken cancellationToken)
@@ -64,5 +79,6 @@ namespace Matgar.Api.Controllers
 
             return result.ToActionResult();
         }
+
     }
 }
