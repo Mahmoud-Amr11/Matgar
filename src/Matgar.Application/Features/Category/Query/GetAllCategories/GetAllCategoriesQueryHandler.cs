@@ -29,9 +29,6 @@ namespace Matgar.Application.Features.Category.Query.GetAllCategories
                 pagination.NormalizedPageSize,
                 pagination.NormalizedPage,
                 cancellationToken);
-
-
-
             return result;
         }
     }

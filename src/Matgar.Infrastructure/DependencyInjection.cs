@@ -10,6 +10,7 @@ using Matgar.Infrastructure.Identity.Services;
 using Matgar.Infrastructure.Options;
 using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
+using Matgar.Infrastructure.Persistence.Dapper;
 using Matgar.Infrastructure.Persistence.Interceptor;
 using Matgar.Infrastructure.Persistence.Queries.Category;
 using Matgar.Infrastructure.Persistence.Repositories;

@@ -1,8 +1,9 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Matgar.Application.Abstractions.Dapper;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 
-namespace Matgar.Application.Abstractions.Dapper
+namespace Matgar.Infrastructure.Persistence.Dapper
 {
     internal class DapperConnectionFactory : IDbConnectionFactory
     {

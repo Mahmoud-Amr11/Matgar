@@ -37,7 +37,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.Category
             WHERE
                 @Search IS NULL
                 OR Name LIKE '%' + @Search + '%'
-            ORDER BY CreatedAt
+            ORDER BY CreatedAt DESC, Id
             OFFSET @Offset ROWS
             FETCH NEXT @PageSize ROWS ONLY;
 
@@ -78,6 +78,29 @@ namespace Matgar.Infrastructure.Persistence.Queries.Category
                 page,
                 pageSize,
                 totalCount);
+        }
+
+        public async Task<CategoryResponse?> GetById(Guid id, CancellationToken cancellationToken)
+        {
+            using var connection =
+          _connectionFactory.CreateConnection();
+
+            const string sql = """
+                SELECT
+                    Id AS CategoryId,
+                    Slug AS CategorySlug,
+                    Name AS CategoryName
+                FROM Categories
+                WHERE Id = @Id;
+                """;
+
+            var command = new CommandDefinition(
+                sql,
+                new { Id = id },
+               cancellationToken: cancellationToken);
+
+            return await connection.QuerySingleOrDefaultAsync<CategoryResponse>(
+                command);
         }
     }
 }

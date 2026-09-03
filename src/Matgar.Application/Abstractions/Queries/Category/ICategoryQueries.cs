@@ -11,5 +11,9 @@ namespace Matgar.Application.Abstractions.Queries.Category
        int pageSize,
        int page,
        CancellationToken cancellationToken);
+
+
+
+        Task<CategoryResponse?> GetById(Guid id, CancellationToken cancellationToken);
     }
 }

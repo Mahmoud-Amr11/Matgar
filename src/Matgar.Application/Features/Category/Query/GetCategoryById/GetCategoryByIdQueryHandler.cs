@@ -1,4 +1,4 @@
-﻿using Matgar.Application.Abstractions.Repositories;
+﻿using Matgar.Application.Abstractions.Queries.Category;
 using Matgar.Application.Common.Results;
 using Matgar.Application.Features.Category.Query.Responses;
 using MediatR;
@@ -8,23 +8,21 @@ namespace Matgar.Application.Features.Category.Query.GetCategoryById;
 public sealed class GetCategoryByIdQueryHandler
     : IRequestHandler<GetCategoryByIdQuery, Result<CategoryResponse>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICategoryQueries _categoryQueries;
 
-    public GetCategoryByIdQueryHandler(IUnitOfWork unitOfWork)
+    public GetCategoryByIdQueryHandler(ICategoryQueries categoryQueries)
     {
-        _unitOfWork = unitOfWork;
+        _categoryQueries = categoryQueries;
     }
 
     public async Task<Result<CategoryResponse>> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
-        var category = await _unitOfWork.Categories.GetByIdAsync(request.Id, cancellationToken);
+        var category = await _categoryQueries.GetById(request.Id, cancellationToken);
 
-        return new CategoryResponse
-            (
-            category.Id,
-            category.Slug,
-            category.Name
-            );
+        if (category is null)
+            return Error.NotFound(message: "Category not found");
+
+        return category;
     }
 }
 
