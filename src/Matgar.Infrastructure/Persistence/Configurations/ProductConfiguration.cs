@@ -20,11 +20,6 @@ namespace Matgar.Infrastructure.Persistence.Configurations
                 .HasMaxLength(4000);
 
 
-            builder.Property(p => p.Status)
-                .IsRequired()
-                .HasConversion<string>();
-
-
 
 
             builder.HasQueryFilter(p => p.IsDeleted == false);
@@ -47,3 +42,4 @@ namespace Matgar.Infrastructure.Persistence.Configurations
         }
     }
 }
+

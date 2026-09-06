@@ -102,9 +102,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
             return new PagedResult<ProductListItemResponse>(items, page, pageSize, totalCount);
         }
 
-        // ProductRow: shape الصف الخام القادم من SQL — منفصل عن
-        // ProductListItemResponse عشان TotalCount (تفصيلة خاصة بالـ paging)
-        // متتسربش لداخل الـ DTO العام اللي بيوصل للـ client.
+
         private sealed record ProductRow(
             Guid ProductId,
             string ProductName,
@@ -121,14 +119,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
         {
             using var connection = _connectionFactory.CreateConnection();
 
-            // 3 result sets منفصلة في نفس الـ round-trip:
-            // 1) المنتج + الفئة + متوسط التقييم وعددها
-            // 2) الـ Variants مع الكمية المتاحة (Available = OnHand - Reserved)
-            // 3) الـ Reviews
-            //
-            // لازم يكونوا منفصلين: لو عملنا JOIN مباشر بين Product و Variants
-            // و Reviews في استعلام واحد، أي منتج عنده 3 variants و5 reviews
-            // هيرجع 15 صف (3 × 5) بدل 8 -- Cartesian product كلاسيكي.
+
             const string sql = """
                 SELECT
                     p.Id AS ProductId,

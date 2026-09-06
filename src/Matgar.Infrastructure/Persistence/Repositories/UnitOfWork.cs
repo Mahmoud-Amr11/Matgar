@@ -18,6 +18,14 @@ namespace Matgar.Infrastructure.Persistence.Repositories
         public ICategoryRepository Categories =>
             _categories ??= new CategoryRepository(_context);
 
+
+        private IProductRepository? _products;
+        public IProductRepository Products =>
+            _products ??= new ProductRepository(_context);
+
+        private IProductVariantRepository? _productVariants;
+        public IProductVariantRepository ProductVariants =>
+            _productVariants ??= new ProductVariantRepository(_context);
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;

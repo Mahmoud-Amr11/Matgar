@@ -7,7 +7,8 @@ namespace Matgar.Application.Abstractions.Repositories
     {
         IGenericRepository<OutboxMessage> OutboxMessages { get; }
         ICategoryRepository Categories { get; }
-
+        IProductRepository Products { get; }
+        IProductVariantRepository ProductVariants { get; }
         Task BeginTransactionAsync(CancellationToken cancellationToken = default);
         Task CommitTransactionAsync(CancellationToken cancellationToken = default);
         Task RollbackTransactionAsync(CancellationToken cancellationToken = default);

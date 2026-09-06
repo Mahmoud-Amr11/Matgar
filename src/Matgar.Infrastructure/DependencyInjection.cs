@@ -3,6 +3,7 @@ using Matgar.Application.Abstractions.Dapper;
 using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Queries.Category;
 using Matgar.Application.Abstractions.Queries.Products;
+using Matgar.Application.Abstractions.Queries.ProductVariant;
 using Matgar.Application.Abstractions.Repositories;
 using Matgar.Application.Abstractions.Services;
 using Matgar.Application.Common.Caching;
@@ -14,6 +15,7 @@ using Matgar.Infrastructure.Persistence.Contexts;
 using Matgar.Infrastructure.Persistence.Dapper;
 using Matgar.Infrastructure.Persistence.Interceptor;
 using Matgar.Infrastructure.Persistence.Queries.Category;
+using Matgar.Infrastructure.Persistence.Queries.ProductVariant;
 using Matgar.Infrastructure.Persistence.Queries.Produtcs;
 using Matgar.Infrastructure.Persistence.Repositories;
 using Matgar.Infrastructure.Persistence.Seeders;
@@ -51,6 +53,7 @@ namespace Matgar.Infrastructure
             services.AddScoped<DataSeederRunner>();
             services.AddScoped<ICategoryQueries, CategoryQueries>();
             services.AddScoped<IProductQueries, ProductQueries>();
+            services.AddScoped<IProductVariantQueries, ProductVariantQueries>();
 
             return services;
         }

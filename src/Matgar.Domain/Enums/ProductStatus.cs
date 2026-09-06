@@ -1,7 +1,8 @@
 ﻿public enum ProductStatus
 {
     Draft = 0,
-    Active = 1,
-    Suspended = 2
+    PendingReview = 1,
+    Active = 2,
+    Suspended = 3
 }
 

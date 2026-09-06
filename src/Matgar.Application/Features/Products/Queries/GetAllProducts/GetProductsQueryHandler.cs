@@ -25,9 +25,7 @@ namespace Matgar.Application.Features.Products.Queries.GetAllProducts
                 PageSize = request.PageSize
             };
 
-            // فحص منطقي: لو الـ client بعت MinPrice أكبر من MaxPrice،
-            // ده مش خطأ سيرفر، ده مدخل غلط من المستخدم — نرجع Validation error
-            // واضح بدل ما نسيب الـ SQL يرجع نتيجة فاضية بشكل مبهم.
+
             if (request.MinPrice.HasValue && request.MaxPrice.HasValue
                 && request.MinPrice > request.MaxPrice)
             {
