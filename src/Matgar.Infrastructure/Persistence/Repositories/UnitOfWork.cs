@@ -31,6 +31,19 @@ namespace Matgar.Infrastructure.Persistence.Repositories
         private IProductReviewRepository? _productReviews;
         public IProductReviewRepository ProductReviews =>
             _productReviews ??= new ProductReviewRepository(_context);
+
+        private ICartRepository? _carts;
+        public ICartRepository Carts =>
+            _carts ??= new CartRepository(_context);
+
+        private ICartItemRepository? _cartItems;
+        public ICartItemRepository CartItems =>
+            _cartItems ??= new CartItemRepository(_context);
+
+        private IGenericRepository<StockItem>? _stockItems;
+        public IGenericRepository<StockItem> StockItems =>
+            _stockItems ??= new GenericRepository<StockItem>(_context);
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;

@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Matgar.Application.Abstractions.Dapper;
 using Matgar.Application.Abstractions.Identity;
+using Matgar.Application.Abstractions.Queries.Cart;
 using Matgar.Application.Abstractions.Queries.Category;
 using Matgar.Application.Abstractions.Queries.ProductReview;
 using Matgar.Application.Abstractions.Queries.Products;
@@ -15,6 +16,7 @@ using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Matgar.Infrastructure.Persistence.Dapper;
 using Matgar.Infrastructure.Persistence.Interceptor;
+using Matgar.Infrastructure.Persistence.Queries.Cart;
 using Matgar.Infrastructure.Persistence.Queries.Category;
 using Matgar.Infrastructure.Persistence.Queries.ProductReview;
 using Matgar.Infrastructure.Persistence.Queries.ProductVariant;
@@ -53,6 +55,7 @@ namespace Matgar.Infrastructure
             services.AddScoped<IDataSeeder, RoleSeeder>();
             services.AddScoped<IDataSeeder, AdminSeeder>();
             services.AddScoped<DataSeederRunner>();
+            services.AddScoped<ICartQueries, CartQueries>();
             services.AddScoped<ICategoryQueries, CategoryQueries>();
             services.AddScoped<IProductQueries, ProductQueries>();
             services.AddScoped<IProductVariantQueries, ProductVariantQueries>();
@@ -118,6 +121,8 @@ namespace Matgar.Infrastructure
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<ICartItemRepository, CartItemRepository>();
             services.AddSingleton<IDbConnectionFactory, DapperConnectionFactory>();
 
             return services;
