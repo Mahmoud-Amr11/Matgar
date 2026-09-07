@@ -26,6 +26,11 @@ namespace Matgar.Infrastructure.Persistence.Repositories
         private IProductVariantRepository? _productVariants;
         public IProductVariantRepository ProductVariants =>
             _productVariants ??= new ProductVariantRepository(_context);
+
+
+        private IProductReviewRepository? _productReviews;
+        public IProductReviewRepository ProductReviews =>
+            _productReviews ??= new ProductReviewRepository(_context);
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;

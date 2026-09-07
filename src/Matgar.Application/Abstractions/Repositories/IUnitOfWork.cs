@@ -9,6 +9,7 @@ namespace Matgar.Application.Abstractions.Repositories
         ICategoryRepository Categories { get; }
         IProductRepository Products { get; }
         IProductVariantRepository ProductVariants { get; }
+        IProductReviewRepository ProductReviews { get; }
         Task BeginTransactionAsync(CancellationToken cancellationToken = default);
         Task CommitTransactionAsync(CancellationToken cancellationToken = default);
         Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
