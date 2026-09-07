@@ -1,6 +1,6 @@
 ﻿using Matgar.Application.Abstractions.Queries.ProductVariant;
 using Matgar.Application.Common.Results;
-using Matgar.Application.Features.Products.Queries.Responses;
+using Matgar.Application.Features.ProductVariant.Queries.Responses;
 using MediatR;
 
 namespace Matgar.Application.Features.ProductVariant.Queries.GetProductVariants

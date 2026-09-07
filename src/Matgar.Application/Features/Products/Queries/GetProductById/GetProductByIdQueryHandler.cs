@@ -18,7 +18,11 @@ namespace Matgar.Application.Features.Products.Queries.GetProductById
         public async Task<Result<ProductDetailsResponse>> Handle(
             GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productQueries.GetByIdAsync(request.ProductId, cancellationToken);
+            var product = await _productQueries.GetByIdAsync(
+                request.ProductId,
+                request.RequestingUserId,
+                request.IsAdmin,
+                cancellationToken);
 
             if (product is null)
                 return Error.NotFound(

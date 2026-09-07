@@ -1,4 +1,4 @@
-﻿using Matgar.Application.Features.Products.Queries.Responses;
+﻿using Matgar.Application.Features.ProductVariant.Queries.Responses;
 
 namespace Matgar.Application.Abstractions.Queries.ProductVariant
 {

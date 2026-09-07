@@ -63,6 +63,13 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
                 LEFT JOIN ProductThumbnail pt ON pt.ProductId = p.Id AND pt.RowNum = 1
                 WHERE
                     (p.IsDeleted = 0 OR p.IsDeleted IS NULL)
+                    -- Suspended ممنوعة من القائمة العامة دايمًا، بغض النظر
+                    -- عن قيمة فلتر الـ Status اللي بعتها الـ client. لو
+                    -- سبنا الشرط ده جزء من "@Status IS NULL OR p.Status =
+                    -- @Status" بس، أي حد يقدر يبعت status=Suspended صراحة
+                    -- ويشوف المنتجات الموقوفة -- الاستبعاد هنا شرط مستقل
+                    -- ثابت لا يتأثر بالفلتر أصلًا.
+                    AND p.Status <> @SuspendedStatus
                     AND (@Search IS NULL OR p.Name LIKE '%' + @Search + '%')
                     AND (@CategoryId IS NULL OR p.CategoryId = @CategoryId)
                     AND (@Status IS NULL OR p.Status = @Status)
@@ -79,6 +86,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
                 Status = status,
+                SuspendedStatus = ProductStatus.Suspended,
                 Offset = offset,
                 PageSize = pageSize
             };
@@ -115,17 +123,26 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
             int TotalCount);
 
         public async Task<ProductDetailsResponse?> GetByIdAsync(
-     Guid id, CancellationToken cancellationToken)
+            Guid id, Guid? requestingUserId, bool isAdmin, CancellationToken cancellationToken)
         {
             using var connection = _connectionFactory.CreateConnection();
 
-
+            // الـ Admin بيشوف أي منتج بغض النظر عن الحالة. الزائر العادي
+            // (requestingUserId == null) أو أي مستخدم مسجل مش صاحب المنتج
+            // لازم ميشوفش المنتج لو Suspended. صاحب المنتج (VendorId
+            // يطابق requestingUserId) بيشوفه حتى لو Suspended عشان يقدر
+            // يتابع حالة منتجه.
+            //
+            // بنبعت isAdmin و requestingUserId كـ parameters للـ SQL بدل
+            // ما نفلتر بعد الجلب في الـ C#، عشان الفلترة تحصل على مستوى
+            // الـ query نفسه ومتفوتش صف لازم يتفلتر أصلًا.
             const string sql = """
                 SELECT
                     p.Id AS ProductId,
                     p.Name AS ProductName,
                     p.Description,
                     p.Status,
+                    p.VendorId,
                     c.Id AS CategoryId,
                     c.Name AS CategoryName,
                     ISNULL(AVG(CAST(pr.Rating AS FLOAT)), 0) AS AverageRating,
@@ -133,8 +150,15 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
                 FROM Products p
                 INNER JOIN Categories c ON c.Id = p.CategoryId
                 LEFT JOIN ProductReviews pr ON pr.ProductId = p.Id
-                WHERE p.Id = @Id AND (p.IsDeleted = 0 OR p.IsDeleted IS NULL)
-                GROUP BY p.Id, p.Name, p.Description, p.Status, c.Id, c.Name;
+                WHERE
+                    p.Id = @Id
+                    AND (p.IsDeleted = 0 OR p.IsDeleted IS NULL)
+                    AND (
+                        p.Status <> @SuspendedStatus
+                        OR @IsAdmin = 1
+                        OR (@RequestingUserId IS NOT NULL AND p.VendorId = @RequestingUserId)
+                    )
+                GROUP BY p.Id, p.Name, p.Description, p.Status, p.VendorId, c.Id, c.Name;
 
                 SELECT
                     pv.Id AS VariantId,
@@ -158,7 +182,15 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
                 ORDER BY pr.CreatedAt DESC;
                 """;
 
-            var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
+            var parameters = new
+            {
+                Id = id,
+                SuspendedStatus = ProductStatus.Suspended,
+                IsAdmin = isAdmin,
+                RequestingUserId = requestingUserId
+            };
+
+            var command = new CommandDefinition(sql, parameters, cancellationToken: cancellationToken);
 
             using var multi = await connection.QueryMultipleAsync(command);
 
@@ -187,6 +219,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
             string ProductName,
             string Description,
             ProductStatus Status,
+            Guid VendorId,
             Guid CategoryId,
             string CategoryName,
             double AverageRating,

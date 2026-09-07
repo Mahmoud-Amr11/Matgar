@@ -16,8 +16,11 @@ namespace Matgar.Application.Abstractions.Queries.Products
             int page,
             CancellationToken cancellationToken);
 
+
         Task<ProductDetailsResponse?> GetByIdAsync(
             Guid id,
+            Guid? requestingUserId,
+            bool isAdmin,
             CancellationToken cancellationToken);
     }
 }

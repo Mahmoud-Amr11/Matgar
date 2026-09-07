@@ -1,10 +1,12 @@
 ﻿using Asp.Versioning;
 using Matgar.Api.Common;
 using Matgar.Api.Requests.Products;
+using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Features.Products.Commands.ApproveProduct;
 using Matgar.Application.Features.Products.Commands.CreateProduct;
 using Matgar.Application.Features.Products.Commands.DeleteProduct;
 using Matgar.Application.Features.Products.Commands.SubmitProductForReview;
+using Matgar.Application.Features.Products.Commands.SuspendProduct;
 using Matgar.Application.Features.Products.Commands.UpdateProduct;
 using Matgar.Application.Features.Products.Queries.GetAllProducts;
 using Matgar.Application.Features.Products.Queries.GetProductById;
@@ -20,10 +22,11 @@ namespace Matgar.Api.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
-
-        public ProductsController(IMediator mediator)
+        private readonly ICurrentUserService _currentUser;
+        public ProductsController(IMediator mediator, ICurrentUserService currentUser)
         {
             _mediator = mediator;
+            _currentUser = currentUser;
         }
 
         [HttpGet]
@@ -45,7 +48,10 @@ namespace Matgar.Api.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new GetProductByIdQuery(id), cancellationToken);
+            Guid? requestingUserId = Guid.TryParse(_currentUser.UserId, out var parsedId) ? parsedId : null;
+            var isAdmin = _currentUser.IsInRole("Admin");
+
+            var result = await _mediator.Send(new GetProductByIdQuery(id, requestingUserId, isAdmin), cancellationToken);
             return result.ToActionResult();
         }
 
@@ -98,6 +104,19 @@ namespace Matgar.Api.Controllers
         public async Task<IActionResult> Approve(Guid id, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(new ApproveProductCommand(id), cancellationToken);
+            return result.ToActionResult();
+        }
+
+
+
+        [HttpPost("{id:guid}/suspend")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Suspend(
+            Guid id,
+            [FromBody] SuspendProductRequest request,
+            CancellationToken cancellationToken)
+        {
+            var result = await _mediator.Send(new SuspendProductCommand(id, request.Reason), cancellationToken);
             return result.ToActionResult();
         }
     }

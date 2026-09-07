@@ -1,5 +1,5 @@
 ﻿using Matgar.Application.Common.Caching;
-using Matgar.Application.Features.Products.Queries.Responses;
+using Matgar.Application.Features.ProductVariant.Queries.Responses;
 
 namespace Matgar.Application.Features.ProductVariant.Queries.GetProductVariants
 {
