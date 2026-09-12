@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Matgar.Application.Abstractions.Dapper;
 using Matgar.Application.Abstractions.Identity;
+using Matgar.Application.Abstractions.Queries.Addresses;
 using Matgar.Application.Abstractions.Queries.Cart;
 using Matgar.Application.Abstractions.Queries.Category;
 using Matgar.Application.Abstractions.Queries.ProductReview;
@@ -16,6 +17,7 @@ using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Matgar.Infrastructure.Persistence.Dapper;
 using Matgar.Infrastructure.Persistence.Interceptor;
+using Matgar.Infrastructure.Persistence.Queries.Addresses;
 using Matgar.Infrastructure.Persistence.Queries.Cart;
 using Matgar.Infrastructure.Persistence.Queries.Category;
 using Matgar.Infrastructure.Persistence.Queries.ProductReview;
@@ -55,6 +57,7 @@ namespace Matgar.Infrastructure
             services.AddScoped<IDataSeeder, RoleSeeder>();
             services.AddScoped<IDataSeeder, AdminSeeder>();
             services.AddScoped<DataSeederRunner>();
+            services.AddScoped<IAddressQueries, AddressQueries>();
             services.AddScoped<ICartQueries, CartQueries>();
             services.AddScoped<ICategoryQueries, CategoryQueries>();
             services.AddScoped<IProductQueries, ProductQueries>();

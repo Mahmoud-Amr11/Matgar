@@ -44,6 +44,10 @@ namespace Matgar.Infrastructure.Persistence.Repositories
         public IGenericRepository<StockItem> StockItems =>
             _stockItems ??= new GenericRepository<StockItem>(_context);
 
+        private IGenericRepository<Address>? _addresses;
+        public IGenericRepository<Address> Addresses =>
+            _addresses ??= new GenericRepository<Address>(_context);
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
