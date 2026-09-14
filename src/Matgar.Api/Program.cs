@@ -31,7 +31,7 @@ namespace Matgar.Api
                 if (app.Environment.IsDevelopment())
                 {
                     app.MapSwagger();
-                    app.MapSwaggerUI();
+
                 }
 
                 await app.UseApiPipeline();

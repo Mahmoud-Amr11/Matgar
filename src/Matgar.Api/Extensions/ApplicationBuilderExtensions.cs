@@ -15,6 +15,7 @@ namespace Matgar.Api.Extensions
             await app.Services.SeedDatabaseAsync();
             app.UseStatusCodePages();
             app.UseExceptionHandler();
+            app.UseStaticFiles();
             //app.UseSerilogRequestLoggingWithDetails();
             app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
@@ -44,6 +45,7 @@ namespace Matgar.Api.Extensions
                 options.DisplayRequestDuration();
                 options.EnableFilter();
                 options.DocExpansion(DocExpansion.None);
+                options.InjectJavascript("/swagger/custom.js");
             });
         }
 
