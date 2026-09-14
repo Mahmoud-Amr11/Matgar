@@ -40,6 +40,11 @@ namespace Matgar.Infrastructure.Persistence.Repositories
         public ICartItemRepository CartItems =>
             _cartItems ??= new CartItemRepository(_context);
 
+
+        private ICouponRepository? _coupons;
+        public ICouponRepository Coupons =>
+            _coupons ??= new CouponRepository(_context);
+
         private IGenericRepository<StockItem>? _stockItems;
         public IGenericRepository<StockItem> StockItems =>
             _stockItems ??= new GenericRepository<StockItem>(_context);

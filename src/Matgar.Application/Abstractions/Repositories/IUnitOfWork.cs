@@ -12,6 +12,8 @@ namespace Matgar.Application.Abstractions.Repositories
         IProductReviewRepository ProductReviews { get; }
         ICartRepository Carts { get; }
         ICartItemRepository CartItems { get; }
+
+        ICouponRepository Coupons { get; }
         IGenericRepository<StockItem> StockItems { get; }
         IGenericRepository<Address> Addresses { get; }
         Task BeginTransactionAsync(CancellationToken cancellationToken = default);
