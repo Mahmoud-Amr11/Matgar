@@ -49,6 +49,14 @@ namespace Matgar.Infrastructure.Persistence.Repositories
         public IGenericRepository<StockItem> StockItems =>
             _stockItems ??= new GenericRepository<StockItem>(_context);
 
+        private IGenericRepository<Order>? _orders;
+        public IGenericRepository<Order> Orders =>
+            _orders ??= new GenericRepository<Order>(_context);
+
+        private IGenericRepository<OrderItem>? _orderItems;
+        public IGenericRepository<OrderItem> OrderItems =>
+            _orderItems ??= new GenericRepository<OrderItem>(_context);
+
         private IGenericRepository<Address>? _addresses;
         public IGenericRepository<Address> Addresses =>
             _addresses ??= new GenericRepository<Address>(_context);

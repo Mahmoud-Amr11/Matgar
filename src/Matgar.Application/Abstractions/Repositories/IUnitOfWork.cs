@@ -15,6 +15,8 @@ namespace Matgar.Application.Abstractions.Repositories
 
         ICouponRepository Coupons { get; }
         IGenericRepository<StockItem> StockItems { get; }
+        IGenericRepository<Order> Orders { get; }
+        IGenericRepository<OrderItem> OrderItems { get; }
         IGenericRepository<Address> Addresses { get; }
         Task BeginTransactionAsync(CancellationToken cancellationToken = default);
         Task CommitTransactionAsync(CancellationToken cancellationToken = default);
