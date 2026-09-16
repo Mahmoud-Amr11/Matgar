@@ -64,6 +64,7 @@ namespace Matgar.Infrastructure
             services.AddScoped<IProductVariantQueries, ProductVariantQueries>();
             services.AddScoped<IProductReviewQueries, ProductReviewQueries>();
             services.AddScoped<IPurchaseVerificationQueries, PurchaseVerificationQueries>();
+            services.AddScoped<Matgar.Application.Abstractions.Queries.Orders.IOrderQueries, Matgar.Infrastructure.Persistence.Queries.Orders.OrderQueries>();
             return services;
         }
 

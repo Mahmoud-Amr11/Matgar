@@ -1,39 +1,30 @@
 using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
 using Matgar.Application.Common.Results;
+using Matgar.Application.Common.Pagination;
 using MediatR;
 
 namespace Matgar.Application.Features.Orders.Queries.GetOrders
 {
-    public class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, Result<IReadOnlyList<OrderResponse>>>
+    public class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, Result<PagedResult<OrderResponse>>>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly Matgar.Application.Abstractions.Queries.Orders.IOrderQueries _orderQueries;
         private readonly ICurrentUserService _currentUser;
 
-        public GetOrdersQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser)
+        public GetOrdersQueryHandler(Matgar.Application.Abstractions.Queries.Orders.IOrderQueries orderQueries, ICurrentUserService currentUser)
         {
-            _unitOfWork = unitOfWork;
+            _orderQueries = orderQueries;
             _currentUser = currentUser;
         }
 
-        public async Task<Result<IReadOnlyList<OrderResponse>>> Handle(GetOrdersQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PagedResult<OrderResponse>>> Handle(GetOrdersQuery request, CancellationToken cancellationToken)
         {
             if (!Guid.TryParse(_currentUser.UserId, out var userId))
                 return Error.Unauthorized(message: "Invalid user identity.");
 
-            var orders = await _unitOfWork.Orders.FindAsync(o => o.CustomerId == userId, cancellationToken);
-
-            var response = orders.Select(o => new OrderResponse
-            {
-                Id = o.Id,
-                CreatedAt = o.CreatedAt,
-                SubTotal = o.SubTotal,
-                DiscountAmount = o.DiscountAmount,
-                TotalAmount = o.TotalAmount,
-                Status = o.Status.ToString()
-            }).ToList();
-
-            return Result<IReadOnlyList<OrderResponse>>.Success(response);
+            var offset = (request.Page - 1) * request.PageSize;
+            var orders = await _orderQueries.GetOrdersByUserIdAsync(userId, offset, request.PageSize, request.Page, cancellationToken);
+            return Result<PagedResult<OrderResponse>>.Success(orders);
         }
     }
 }

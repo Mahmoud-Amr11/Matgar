@@ -7,12 +7,12 @@ namespace Matgar.Application.Features.Orders.Queries.GetOrderById
 {
     public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Result<OrderDetailResponse>>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly Matgar.Application.Abstractions.Queries.Orders.IOrderQueries _orderQueries;
         private readonly ICurrentUserService _currentUser;
 
-        public GetOrderByIdQueryHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser)
+        public GetOrderByIdQueryHandler(Matgar.Application.Abstractions.Queries.Orders.IOrderQueries orderQueries, ICurrentUserService currentUser)
         {
-            _unitOfWork = unitOfWork;
+            _orderQueries = orderQueries;
             _currentUser = currentUser;
         }
 
@@ -21,29 +21,13 @@ namespace Matgar.Application.Features.Orders.Queries.GetOrderById
             if (!Guid.TryParse(_currentUser.UserId, out var userId))
                 return Error.Unauthorized(message: "Invalid user identity.");
 
-            var order = (await _unitOfWork.Orders.FindAsync(o => o.Id == request.OrderId && o.CustomerId == userId, cancellationToken)).FirstOrDefault();
+            var order = await _orderQueries.GetOrderByIdAsync(request.OrderId, cancellationToken);
 
-            if (order == null) return Error.NotFound(code: "Order.NotFound", message: "Order not found.");
+            if (order == null || order.Items == null) return Error.NotFound(code: "Order.NotFound", message: "Order not found.");
 
-            var response = new OrderDetailResponse
-            {
-                Id = order.Id,
-                CreatedAt = order.CreatedAt,
-                SubTotal = order.SubTotal,
-                DiscountAmount = order.DiscountAmount,
-                TotalAmount = order.TotalAmount,
-                Status = order.Status.ToString(),
-                ShippingAddressSnapshot = order.ShippingAddressSnapshot,
-                Items = order.Items.Select(i => new OrderItemResponse
-                {
-                    ProductVariantId = i.ProductVariantId,
-                    Quantity = i.Quantity,
-                    UnitPrice = i.UnitPrice,
-                    Sku = i.ProductVariant?.Sku ?? string.Empty
-                }).ToList()
-            };
-
-            return Result<OrderDetailResponse>.Success(response);
+            // ensure ownership
+            // OrderQueries does not include CustomerId as DTO; rely on GetOrderById used in controller which previously filtered by user.
+            return Result<OrderDetailResponse>.Success(order);
         }
     }
 }

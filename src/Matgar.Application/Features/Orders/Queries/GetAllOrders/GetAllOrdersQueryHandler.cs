@@ -1,31 +1,23 @@
-using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Common.Pagination;
 using Matgar.Application.Common.Results;
 using MediatR;
 
 namespace Matgar.Application.Features.Orders.Queries.GetAllOrders
 {
-    public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, Result<IReadOnlyList<GetAllOrdersResponse>>>
+    public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, Result<PagedResult<GetAllOrdersResponse>>>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly Matgar.Application.Abstractions.Queries.Orders.IOrderQueries _orderQueries;
 
-        public GetAllOrdersQueryHandler(IUnitOfWork unitOfWork)
+        public GetAllOrdersQueryHandler(Matgar.Application.Abstractions.Queries.Orders.IOrderQueries orderQueries)
         {
-            _unitOfWork = unitOfWork;
+            _orderQueries = orderQueries;
         }
 
-        public async Task<Result<IReadOnlyList<GetAllOrdersResponse>>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PagedResult<GetAllOrdersResponse>>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
         {
-            var orders = await _unitOfWork.Orders.GetAllAsync(cancellationToken);
-
-            var response = orders.Select(o => new GetAllOrdersResponse
-            {
-                Id = o.Id,
-                CreatedAt = o.CreatedAt,
-                TotalAmount = o.TotalAmount,
-                Status = o.Status.ToString()
-            }).ToList();
-
-            return Result<IReadOnlyList<GetAllOrdersResponse>>.Success(response);
+            var offset = (request.Page - 1) * request.PageSize;
+            var orders = await _orderQueries.GetAllOrdersAsync(offset, request.PageSize, request.Page, cancellationToken);
+            return Result<PagedResult<GetAllOrdersResponse>>.Success(orders);
         }
     }
 }
