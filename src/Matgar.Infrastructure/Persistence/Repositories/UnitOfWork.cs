@@ -61,6 +61,14 @@ namespace Matgar.Infrastructure.Persistence.Repositories
         public IGenericRepository<Address> Addresses =>
             _addresses ??= new GenericRepository<Address>(_context);
 
+        private IGenericRepository<NotificationLog>? _notifications;
+        public IGenericRepository<NotificationLog> Notifications =>
+            _notifications ??= new GenericRepository<NotificationLog>(_context);
+
+        private IGenericRepository<Payment>? _payments;
+        public IGenericRepository<Payment> Payments =>
+            _payments ??= new GenericRepository<Payment>(_context);
+
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;

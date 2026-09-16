@@ -18,6 +18,8 @@ namespace Matgar.Application.Abstractions.Repositories
         IGenericRepository<Order> Orders { get; }
         IGenericRepository<OrderItem> OrderItems { get; }
         IGenericRepository<Address> Addresses { get; }
+        IGenericRepository<NotificationLog> Notifications { get; }
+        IGenericRepository<Payment> Payments { get; }
         Task BeginTransactionAsync(CancellationToken cancellationToken = default);
         Task CommitTransactionAsync(CancellationToken cancellationToken = default);
         Task RollbackTransactionAsync(CancellationToken cancellationToken = default);

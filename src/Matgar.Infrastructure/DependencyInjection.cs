@@ -23,6 +23,8 @@ using Matgar.Infrastructure.Persistence.Queries.Category;
 using Matgar.Infrastructure.Persistence.Queries.ProductReview;
 using Matgar.Infrastructure.Persistence.Queries.ProductVariant;
 using Matgar.Infrastructure.Persistence.Queries.Produtcs;
+using Matgar.Application.Abstractions.Queries.Notifications;
+using Matgar.Infrastructure.Persistence.Queries.Notifications;
 using Matgar.Infrastructure.Persistence.Repositories;
 using Matgar.Infrastructure.Persistence.Seeders;
 using Matgar.Infrastructure.Services;
@@ -65,6 +67,7 @@ namespace Matgar.Infrastructure
             services.AddScoped<IProductReviewQueries, ProductReviewQueries>();
             services.AddScoped<IPurchaseVerificationQueries, PurchaseVerificationQueries>();
             services.AddScoped<Matgar.Application.Abstractions.Queries.Orders.IOrderQueries, Matgar.Infrastructure.Persistence.Queries.Orders.OrderQueries>();
+            services.AddScoped<INotificationQueries, NotificationQueries>();
             return services;
         }
 
