@@ -28,7 +28,8 @@ namespace Matgar.Application.Features.Category.Commands.DeleteCategory
             _unitOfWork.Categories.Remove(category);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _cacheService.RemoveAsync($"category-id:{request.CategoryId}");
-            await _cacheService.RemoveAsync("categories:all");
+            await _cacheService.RemoveAsync($"category-slug:{category.Slug}");
+            await _cacheService.RemoveByPrefixAsync("categories:list", cancellationToken);
             return Result.Success;
         }
     }

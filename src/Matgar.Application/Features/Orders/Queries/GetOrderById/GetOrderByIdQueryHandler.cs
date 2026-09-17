@@ -25,8 +25,18 @@ namespace Matgar.Application.Features.Orders.Queries.GetOrderById
 
             if (order == null || order.Items == null) return Error.NotFound(code: "Order.NotFound", message: "Order not found.");
 
-            // ensure ownership
-            // OrderQueries does not include CustomerId as DTO; rely on GetOrderById used in controller which previously filtered by user.
+            // Authorization: admin can view any order, a customer only their own,
+            // and a vendor only orders that contain one of their products.
+            if (!_currentUser.IsInRole("Admin") && order.CustomerId != userId)
+            {
+                if (!_currentUser.IsInRole("Vendor"))
+                    return Error.Forbidden(code: "Order.Forbidden", message: "You do not have permission to view this order.");
+
+                var vendorOwnsOrder = await _orderQueries.VendorOwnsOrderAsync(userId, request.OrderId, cancellationToken);
+                if (!vendorOwnsOrder)
+                    return Error.Forbidden(code: "Order.Forbidden", message: "You do not have permission to view this order.");
+            }
+
             return Result<OrderDetailResponse>.Success(order);
         }
     }

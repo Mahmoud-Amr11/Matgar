@@ -3,6 +3,7 @@ namespace Matgar.Application.Features.Orders.Queries.GetOrderById
     public class OrderDetailResponse
     {
         public Guid Id { get; set; }
+        public Guid CustomerId { get; set; }
         public DateTime CreatedAt { get; set; }
         public decimal SubTotal { get; set; }
         public decimal DiscountAmount { get; set; }

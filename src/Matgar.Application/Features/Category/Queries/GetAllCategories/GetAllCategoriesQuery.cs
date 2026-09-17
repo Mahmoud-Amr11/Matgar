@@ -18,7 +18,7 @@ namespace Matgar.Application.Features.Category.Query.GetAllCategories
                     : Search.Trim().ToLowerInvariant();
 
                 return
-                    $"GetAllCategories_Search_{normalizedSearch}_Page_{Page}_Size_{PageSize}";
+                    $"categories:list:search_{normalizedSearch}_page_{Page}_size_{PageSize}";
             }
         }
         public TimeSpan? Expiration => TimeSpan.FromMinutes(30);

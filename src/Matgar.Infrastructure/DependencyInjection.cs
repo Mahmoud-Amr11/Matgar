@@ -31,9 +31,11 @@ using Matgar.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 namespace Matgar.Infrastructure
 {
@@ -94,13 +96,25 @@ namespace Matgar.Infrastructure
             });
 
 
+            var redisConnection = configuration.GetConnectionString("Redis");
+
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration.GetConnectionString("Redis");
+                options.Configuration = redisConnection;
             });
 
+            if (!string.IsNullOrWhiteSpace(redisConnection))
+            {
+                var scanOptions = ConfigurationOptions.Parse(redisConnection);
+                scanOptions.AbortOnConnectFail = false;
 
-            services.AddScoped<ICacheService, CacheService>();
+                services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(scanOptions));
+            }
+
+            services.AddScoped<ICacheService>(serviceProvider =>
+                new CacheService(
+                    serviceProvider.GetRequiredService<IDistributedCache>(),
+                    serviceProvider.GetService<IConnectionMultiplexer>()));
             return services;
         }
 

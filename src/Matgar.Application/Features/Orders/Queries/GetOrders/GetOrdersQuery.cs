@@ -9,6 +9,6 @@ namespace Matgar.Application.Features.Orders.Queries.GetOrders
     {
         public string CacheKey => $"GetOrders_User_Page_{Page}_Size_{PageSize}";
         public TimeSpan? Expiration => TimeSpan.FromMinutes(2);
-        public bool BypassCache => false;
+        public bool BypassCache => true;
     };
 }

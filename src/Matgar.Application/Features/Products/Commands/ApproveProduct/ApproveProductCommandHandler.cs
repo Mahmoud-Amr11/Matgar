@@ -1,4 +1,5 @@
 ﻿using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Common.Caching;
 using Matgar.Application.Common.Results;
 using MediatR;
 
@@ -7,10 +8,12 @@ namespace Matgar.Application.Features.Products.Commands.ApproveProduct
     public class ApproveProductCommandHandler : IRequestHandler<ApproveProductCommand, Result>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICacheService _cacheService;
 
-        public ApproveProductCommandHandler(IUnitOfWork unitOfWork)
+        public ApproveProductCommandHandler(IUnitOfWork unitOfWork, ICacheService cacheService)
         {
             _unitOfWork = unitOfWork;
+            _cacheService = cacheService;
         }
 
         public async Task<Result> Handle(ApproveProductCommand request, CancellationToken cancellationToken)
@@ -29,6 +32,9 @@ namespace Matgar.Application.Features.Products.Commands.ApproveProduct
 
             _unitOfWork.Products.Update(product);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _cacheService.RemoveByPrefixAsync("GetProducts", cancellationToken);
+            await _cacheService.RemoveByPrefixAsync("GetProductById", cancellationToken);
 
             return Result.Success;
         }

@@ -45,7 +45,8 @@ namespace Matgar.Application.Features.Category.Commands.UpdateCategory
 
             await _cacheService.RemoveAsync($"category-id:{request.CategoryId}");
             await _cacheService.RemoveAsync($"category-slug:{oldSlug}");
-            await _cacheService.RemoveAsync("categories:all");
+            await _cacheService.RemoveAsync($"category-slug:{newSlug}");
+            await _cacheService.RemoveByPrefixAsync("categories:list", cancellationToken);
 
             return Result.Success;
         }

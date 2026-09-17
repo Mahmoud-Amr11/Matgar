@@ -37,7 +37,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.ProductReview
 
             var command = new CommandDefinition(
                 sql,
-                new { UserId = userId, ProductId = productId, DeliveredStatus = OrderStatus.Delivered },
+                new { UserId = userId, ProductId = productId, DeliveredStatus = OrderStatus.Delivered.ToString() },
                 cancellationToken: cancellationToken);
 
             return await connection.QuerySingleOrDefaultAsync<Guid?>(command);

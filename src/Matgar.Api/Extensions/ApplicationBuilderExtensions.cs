@@ -1,6 +1,8 @@
 ﻿using Hangfire;
+using Matgar.Api.HealthChecks;
 using Matgar.Infrastructure;
 using Matgar.Infrastructure.Services;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -20,10 +22,11 @@ namespace Matgar.Api.Extensions
             app.UseSerilogRequestLogging();
             app.UseHttpsRedirection();
             app.UseRouting();
-            //app.UseCors();
+            app.UseCors(ServiceCollectionExtensions.CorsPolicyName);
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseRateLimiter();
+            app.UseRateLimiter();
+            MapHealthEndpoints(app);
             app.UseHangfireDashboard("/jobs");
             var recurringJobManager =
                   app.Services.GetRequiredService<IRecurringJobManager>();
@@ -46,6 +49,28 @@ namespace Matgar.Api.Extensions
                 options.EnableFilter();
                 options.DocExpansion(DocExpansion.None);
                 options.InjectJavascript("/swagger/custom.js");
+            });
+        }
+
+
+
+        private static void MapHealthEndpoints(WebApplication app)
+        {
+            app.MapHealthChecks("/health", new HealthCheckOptions
+            {
+                ResponseWriter = HealthCheckResponseWriter.WriteAsync
+            });
+
+            app.MapHealthChecks("/health/live", new HealthCheckOptions
+            {
+                Predicate = _ => false,
+                ResponseWriter = HealthCheckResponseWriter.WriteAsync
+            });
+
+            app.MapHealthChecks("/health/ready", new HealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains("ready"),
+                ResponseWriter = HealthCheckResponseWriter.WriteAsync
             });
         }
 

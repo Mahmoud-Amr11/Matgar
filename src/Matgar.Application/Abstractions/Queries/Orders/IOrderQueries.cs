@@ -12,5 +12,6 @@ namespace Matgar.Application.Abstractions.Queries.Orders
         Task<OrderDetailResponse?> GetOrderByIdAsync(Guid orderId, CancellationToken cancellationToken = default);
         Task<PagedResult<VendorOrderResponse>> GetOrdersByVendorIdAsync(Guid vendorId, int offset, int pageSize, int page, CancellationToken cancellationToken = default);
         Task<PagedResult<GetAllOrdersResponse>> GetAllOrdersAsync(int offset, int pageSize, int page, CancellationToken cancellationToken = default);
+        Task<bool> VendorOwnsOrderAsync(Guid vendorId, Guid orderId, CancellationToken cancellationToken = default);
     }
 }

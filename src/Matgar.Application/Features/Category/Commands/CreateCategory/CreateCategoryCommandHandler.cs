@@ -1,4 +1,5 @@
 ﻿using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Common.Caching;
 using Matgar.Application.Common.Results;
 using MediatR;
 using System.Text.RegularExpressions;
@@ -8,10 +9,12 @@ namespace Matgar.Application.Features.Category.Commands.CreateCategory
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Result>
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICacheService _cacheService;
 
-        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork)
+        public CreateCategoryCommandHandler(IUnitOfWork unitOfWork, ICacheService cacheService)
         {
             _unitOfWork = unitOfWork;
+            _cacheService = cacheService;
         }
 
         public async Task<Result> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -30,6 +33,8 @@ namespace Matgar.Application.Features.Category.Commands.CreateCategory
 
             await _unitOfWork.Categories.AddAsync(category, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _cacheService.RemoveByPrefixAsync("categories:list", cancellationToken);
 
             return Result.Success;
         }

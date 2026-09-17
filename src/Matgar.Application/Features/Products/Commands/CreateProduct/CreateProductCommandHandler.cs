@@ -1,5 +1,6 @@
 ﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Common.Caching;
 using Matgar.Application.Common.Results;
 using MediatR;
 
@@ -9,11 +10,13 @@ namespace Matgar.Application.Features.Products.Commands.CreateProduct
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
+        private readonly ICacheService _cacheService;
 
-        public CreateProductCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser)
+        public CreateProductCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser, ICacheService cacheService)
         {
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
+            _cacheService = cacheService;
         }
 
         public async Task<Result<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -38,6 +41,8 @@ namespace Matgar.Application.Features.Products.Commands.CreateProduct
 
             await _unitOfWork.Products.AddAsync(product, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _cacheService.RemoveByPrefixAsync("GetProducts", cancellationToken);
 
             return product.Id;
         }

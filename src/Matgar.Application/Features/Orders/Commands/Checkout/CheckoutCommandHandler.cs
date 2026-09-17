@@ -81,6 +81,13 @@ namespace Matgar.Application.Features.Orders.Commands.Checkout
                     if (discountAmount > subTotal) discountAmount = subTotal;
                 }
 
+                var address = await _unitOfWork.Addresses.GetByIdAsync(request.AddressId, cancellationToken);
+                if (address is null || address.UserId != userId)
+                {
+                    await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                    return Error.Validation(code: "Address.NotFound", message: "Shipping address not found.");
+                }
+
                 var order = new Order
                 {
                     CustomerId = userId,
@@ -88,7 +95,7 @@ namespace Matgar.Application.Features.Orders.Commands.Checkout
                     DiscountAmount = discountAmount,
                     TotalAmount = subTotal - discountAmount,
                     CouponId = couponId,
-                    ShippingAddressSnapshot = (await _unitOfWork.Addresses.GetByIdAsync(request.AddressId, cancellationToken))?.ToString() ?? string.Empty,
+                    ShippingAddressSnapshot = BuildAddressSnapshot(address),
                 };
 
                 foreach (var item in cart.Items)
@@ -124,6 +131,21 @@ namespace Matgar.Application.Features.Orders.Commands.Checkout
                 await _unitOfWork.RollbackTransactionAsync(cancellationToken);
                 return Error.Failure(message: ex.Message);
             }
+        }
+
+        private static string BuildAddressSnapshot(Address address)
+        {
+            var parts = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(address.FullAddress)) parts.Add(address.FullAddress.Trim());
+            if (!string.IsNullOrWhiteSpace(address.City)) parts.Add(address.City.Trim());
+            if (!string.IsNullOrWhiteSpace(address.Governorate)) parts.Add(address.Governorate.Trim());
+
+            var location = string.Join(", ", parts);
+
+            return string.IsNullOrWhiteSpace(address.PhoneNumber)
+                ? location
+                : $"{location} (Phone: {address.PhoneNumber.Trim()})";
         }
     }
 }

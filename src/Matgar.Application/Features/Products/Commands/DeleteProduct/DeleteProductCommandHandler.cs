@@ -1,5 +1,6 @@
 ﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Common.Caching;
 using Matgar.Application.Common.Results;
 using MediatR;
 
@@ -9,11 +10,13 @@ namespace Matgar.Application.Features.Products.Commands.DeleteProduct
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
+        private readonly ICacheService _cacheService;
 
-        public DeleteProductCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser)
+        public DeleteProductCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser, ICacheService cacheService)
         {
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
+            _cacheService = cacheService;
         }
 
         public async Task<Result> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -33,6 +36,9 @@ namespace Matgar.Application.Features.Products.Commands.DeleteProduct
 
             _unitOfWork.Products.Remove(product);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _cacheService.RemoveByPrefixAsync("GetProducts", cancellationToken);
+            await _cacheService.RemoveByPrefixAsync("GetProductById", cancellationToken);
 
             return Result.Success;
         }

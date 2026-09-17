@@ -25,8 +25,20 @@ namespace Matgar.Application.Features.Orders.Commands.UpdateVendorOrderStatus
             var order = (await _unitOfWork.Orders.FindAsync(o => o.Id == request.OrderId, cancellationToken)).FirstOrDefault();
             if (order == null) return Error.NotFound(code: "Order.NotFound", message: "Order not found.");
 
-            // ensure this vendor has items in this order
-            if (!order.Items.Any(i => i.ProductVariant.Product.VendorId == vendorId))
+            // ensure this vendor has items in this order. Order.Items is not eagerly
+            // loaded by the repository, so resolve the ownership through explicit queries.
+            var orderItems = await _unitOfWork.OrderItems.FindAsync(i => i.OrderId == order.Id, cancellationToken);
+            if (orderItems.Count == 0)
+                return Error.Forbidden(code: "Order.Forbidden", message: "You do not have permission to modify this order.");
+
+            var variantIds = orderItems.Select(i => i.ProductVariantId).Distinct().ToList();
+            var variants = await _unitOfWork.ProductVariants.FindAsync(v => variantIds.Contains(v.Id), cancellationToken);
+            var productIds = variants.Select(v => v.ProductId).Distinct().ToList();
+
+            var vendorOwnsOrder = await _unitOfWork.Products.AnyAsync(
+                p => p.VendorId == vendorId && productIds.Contains(p.Id), cancellationToken);
+
+            if (!vendorOwnsOrder)
                 return Error.Forbidden(code: "Order.Forbidden", message: "You do not have permission to modify this order.");
 
             var newStatus = (OrderStatus)request.NewStatus;

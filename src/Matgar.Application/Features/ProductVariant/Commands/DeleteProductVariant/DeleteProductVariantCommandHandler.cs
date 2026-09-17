@@ -1,5 +1,6 @@
 ﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Common.Caching;
 using Matgar.Application.Common.Results;
 using MediatR;
 
@@ -9,11 +10,13 @@ namespace Matgar.Application.Features.ProductVariant.Commands.DeleteProductVaria
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
+        private readonly ICacheService _cacheService;
 
-        public DeleteProductVariantCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser)
+        public DeleteProductVariantCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser, ICacheService cacheService)
         {
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
+            _cacheService = cacheService;
         }
 
         public async Task<Result> Handle(DeleteProductVariantCommand request, CancellationToken cancellationToken)
@@ -33,8 +36,10 @@ namespace Matgar.Application.Features.ProductVariant.Commands.DeleteProductVaria
                 return Error.NotFound(code: "Variant.NotFound", message: "Variant not found.");
 
 
-            _unitOfWork.ProductVariants.Update(variant);
+            _unitOfWork.ProductVariants.Remove(variant);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _cacheService.RemoveAsync($"GetProductVariants_{request.ProductId}", cancellationToken);
 
             return Result.Success;
         }

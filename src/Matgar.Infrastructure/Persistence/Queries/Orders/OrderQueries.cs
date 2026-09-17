@@ -53,7 +53,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.Orders
             using var connection = _connectionFactory.CreateConnection();
 
             const string orderSql = """
-                SELECT Id, CreatedAt, SubTotal, DiscountAmount, TotalAmount, Status, ShippingAddressSnapshot
+                SELECT Id, CustomerId, CreatedAt, SubTotal, DiscountAmount, TotalAmount, Status, ShippingAddressSnapshot
                 FROM Orders
                 WHERE Id = @OrderId
                 """;
@@ -73,6 +73,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.Orders
             var response = new OrderDetailResponse
             {
                 Id = order.Id,
+                CustomerId = order.CustomerId,
                 CreatedAt = order.CreatedAt,
                 SubTotal = order.SubTotal,
                 DiscountAmount = order.DiscountAmount,
@@ -155,9 +156,27 @@ namespace Matgar.Infrastructure.Persistence.Queries.Orders
             return new PagedResult<GetAllOrdersResponse>(items, page, pageSize, totalCount);
         }
 
+        public async Task<bool> VendorOwnsOrderAsync(Guid vendorId, Guid orderId, CancellationToken cancellationToken = default)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+
+            const string sql = """
+                SELECT COUNT(1)
+                FROM OrderItems oi
+                INNER JOIN ProductVariants pv ON pv.Id = oi.ProductVariantId
+                INNER JOIN Products p ON p.Id = pv.ProductId
+                WHERE oi.OrderId = @OrderId AND p.VendorId = @VendorId
+                """;
+
+            var count = await connection.ExecuteScalarAsync<int>(
+                new CommandDefinition(sql, new { OrderId = orderId, VendorId = vendorId }, cancellationToken: cancellationToken));
+
+            return count > 0;
+        }
+
         private sealed record OrderRow(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status);
         private sealed record OrderRowPaged(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status, int TotalCount);
-        private sealed record OrderRowDetail(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status, string ShippingAddressSnapshot);
+        private sealed record OrderRowDetail(Guid Id, Guid CustomerId, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status, string ShippingAddressSnapshot);
         private sealed record OrderItemRow(Guid ProductVariantId, int Quantity, decimal UnitPrice, string Sku);
         private sealed record VendorOrderRow(Guid Id, DateTime CreatedAt, decimal TotalAmount, string Status);
         private sealed record VendorOrderRowPaged(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status, Guid CustomerId, int TotalCount);

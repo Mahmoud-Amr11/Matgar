@@ -31,8 +31,11 @@ namespace Matgar.Application.Features.Orders.Commands.CancelOrder
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
-                // revert reserved quantities
-                foreach (var item in order.Items)
+                // revert reserved quantities. Order.Items is not eagerly loaded,
+                // so fetch the order items explicitly.
+                var orderItems = await _unitOfWork.OrderItems.FindAsync(i => i.OrderId == order.Id, cancellationToken);
+
+                foreach (var item in orderItems)
                 {
                     var stock = (await _unitOfWork.StockItems.FindAsync(s => s.ProductVariantId == item.ProductVariantId, cancellationToken)).FirstOrDefault();
                     if (stock != null)

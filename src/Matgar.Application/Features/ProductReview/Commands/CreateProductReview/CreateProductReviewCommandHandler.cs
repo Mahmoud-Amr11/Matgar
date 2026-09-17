@@ -1,6 +1,7 @@
 ﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Queries.ProductReview;
 using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Common.Caching;
 using Matgar.Application.Common.Results;
 using MediatR;
 
@@ -11,15 +12,18 @@ namespace Matgar.Application.Features.ProductReview.Commands.CreateProductReview
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
         private readonly IPurchaseVerificationQueries _purchaseVerification;
+        private readonly ICacheService _cacheService;
 
         public CreateProductReviewCommandHandler(
             IUnitOfWork unitOfWork,
             ICurrentUserService currentUser,
-            IPurchaseVerificationQueries purchaseVerification)
+            IPurchaseVerificationQueries purchaseVerification,
+            ICacheService cacheService)
         {
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
             _purchaseVerification = purchaseVerification;
+            _cacheService = cacheService;
         }
 
         public async Task<Result<Guid>> Handle(CreateProductReviewCommand request, CancellationToken cancellationToken)
@@ -51,6 +55,8 @@ namespace Matgar.Application.Features.ProductReview.Commands.CreateProductReview
 
             await _unitOfWork.ProductReviews.AddAsync(review, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _cacheService.RemoveByPrefixAsync($"GetProductReviews_{request.ProductId}", cancellationToken);
 
             return review.Id;
         }

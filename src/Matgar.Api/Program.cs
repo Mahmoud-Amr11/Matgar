@@ -22,7 +22,7 @@ namespace Matgar.Api
                 var builder = WebApplication.CreateBuilder(args);
 
                 builder.AddSerilogLogging();
-                builder.Services.AddApiServices().AddInfrastructure(builder.Configuration)
+                builder.Services.AddApiServices(builder.Configuration).AddInfrastructure(builder.Configuration)
                     .AddApplication();
 
                 var app = builder.Build();

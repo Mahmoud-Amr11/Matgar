@@ -1,6 +1,7 @@
 ﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
 using Matgar.Application.Common;
+using Matgar.Application.Common.Caching;
 using Matgar.Application.Common.Results;
 using MediatR;
 
@@ -10,11 +11,13 @@ namespace Matgar.Application.Features.ProductVariant.Commands.UpdateProductVaria
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrentUserService _currentUser;
+        private readonly ICacheService _cacheService;
 
-        public UpdateProductVariantCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser)
+        public UpdateProductVariantCommandHandler(IUnitOfWork unitOfWork, ICurrentUserService currentUser, ICacheService cacheService)
         {
             _unitOfWork = unitOfWork;
             _currentUser = currentUser;
+            _cacheService = cacheService;
         }
 
         public async Task<Result> Handle(UpdateProductVariantCommand request, CancellationToken cancellationToken)
@@ -49,6 +52,8 @@ namespace Matgar.Application.Features.ProductVariant.Commands.UpdateProductVaria
 
             _unitOfWork.ProductVariants.Update(variant);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _cacheService.RemoveAsync($"GetProductVariants_{request.ProductId}", cancellationToken);
 
             return Result.Success;
         }
