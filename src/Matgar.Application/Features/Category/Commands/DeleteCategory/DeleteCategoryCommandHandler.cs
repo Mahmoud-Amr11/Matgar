@@ -21,9 +21,9 @@ namespace Matgar.Application.Features.Category.Commands.DeleteCategory
             if (category is null)
                 return Error.NotFound(message: "Category is not found please try again.");
 
-            //var hasProducts = await _unitOfWork.Products.AnyAsync(p => p.CategoryId == request.CategoryId);
-            //if (hasProducts)
-            //    return Error.Conflict("Category.HasProducts", "Cannot delete this category because it has associated products.");
+            var hasProducts = await _unitOfWork.Products.AnyAsync(p => p.CategoryId == request.CategoryId);
+            if (hasProducts)
+                return Error.Conflict("Category.HasProducts", "Cannot delete this category because it has associated products.");
 
             _unitOfWork.Categories.Remove(category);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

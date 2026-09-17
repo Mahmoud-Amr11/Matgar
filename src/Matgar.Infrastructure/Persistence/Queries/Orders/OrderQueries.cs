@@ -42,7 +42,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.Orders
                 SubTotal = r.SubTotal,
                 DiscountAmount = r.DiscountAmount,
                 TotalAmount = r.TotalAmount,
-                Status = r.Status.ToString()
+                Status = r.Status
             }).ToList();
 
             return new PagedResult<OrderResponse>(items, page, pageSize, totalCount);
@@ -118,7 +118,7 @@ namespace Matgar.Infrastructure.Persistence.Queries.Orders
                 SubTotal = r.SubTotal,
                 DiscountAmount = r.DiscountAmount,
                 TotalAmount = r.TotalAmount,
-                Status = r.Status.ToString(),
+                Status = r.Status,
                 CustomerId = r.CustomerId
             }).ToList();
 
@@ -148,20 +148,20 @@ namespace Matgar.Infrastructure.Persistence.Queries.Orders
                 SubTotal = r.SubTotal,
                 DiscountAmount = r.DiscountAmount,
                 TotalAmount = r.TotalAmount,
-                Status = r.Status.ToString(),
+                Status = r.Status,
                 CustomerId = r.CustomerId
             }).ToList();
 
             return new PagedResult<GetAllOrdersResponse>(items, page, pageSize, totalCount);
         }
 
-        private sealed record OrderRow(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, int Status);
-        private sealed record OrderRowPaged(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, int Status, int TotalCount);
-        private sealed record OrderRowDetail(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, int Status, string ShippingAddressSnapshot);
+        private sealed record OrderRow(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status);
+        private sealed record OrderRowPaged(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status, int TotalCount);
+        private sealed record OrderRowDetail(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status, string ShippingAddressSnapshot);
         private sealed record OrderItemRow(Guid ProductVariantId, int Quantity, decimal UnitPrice, string Sku);
-        private sealed record VendorOrderRow(Guid Id, DateTime CreatedAt, decimal TotalAmount, int Status);
-        private sealed record VendorOrderRowPaged(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, int Status, Guid CustomerId, int TotalCount);
-        private sealed record GetAllOrdersRowPaged(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, int Status, Guid CustomerId, int TotalCount);
-        private sealed record GetAllOrdersRow(Guid Id, DateTime CreatedAt, decimal TotalAmount, int Status);
+        private sealed record VendorOrderRow(Guid Id, DateTime CreatedAt, decimal TotalAmount, string Status);
+        private sealed record VendorOrderRowPaged(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status, Guid CustomerId, int TotalCount);
+        private sealed record GetAllOrdersRowPaged(Guid Id, DateTime CreatedAt, decimal SubTotal, decimal DiscountAmount, decimal TotalAmount, string Status, Guid CustomerId, int TotalCount);
+        private sealed record GetAllOrdersRow(Guid Id, DateTime CreatedAt, decimal TotalAmount, string Status);
     }
 }

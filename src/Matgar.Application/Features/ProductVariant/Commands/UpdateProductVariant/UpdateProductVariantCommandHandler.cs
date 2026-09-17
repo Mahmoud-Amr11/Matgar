@@ -1,5 +1,6 @@
 ﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Common;
 using Matgar.Application.Common.Results;
 using MediatR;
 
@@ -33,6 +34,14 @@ namespace Matgar.Application.Features.ProductVariant.Commands.UpdateProductVaria
             var product = await _unitOfWork.Products.GetByIdAsync(variant.ProductId, cancellationToken);
             if (product is null || product.VendorId != vendorId)
                 return Error.NotFound(code: "Variant.NotFound", message: "Variant not found.");
+
+            // منع تحويل الفاريانت لتركيبة مكررة (نفس Product + نفس الأتريبيوتس)
+            // مع استثناء الفاريانت نفسه من المقارنة.
+            var existingVariants = await _unitOfWork.ProductVariants.FindAsync(
+                v => v.ProductId == request.ProductId && v.Id != request.VariantId, cancellationToken);
+            var newCombination = VariantAttributeComparer.Canonical(request.AttributesJson);
+            if (existingVariants.Any(v => string.Equals(VariantAttributeComparer.Canonical(v.AttributesJson), newCombination, StringComparison.Ordinal)))
+                return Error.Conflict(code: "Variant.CombinationExists", message: "A variant with these attributes already exists for this product.");
 
             variant.Price = request.Price;
             variant.ImageUrl = request.ImageUrl;

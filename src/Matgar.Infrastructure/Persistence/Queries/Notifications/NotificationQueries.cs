@@ -19,8 +19,8 @@ namespace Matgar.Infrastructure.Persistence.Queries.Notifications
             using var conn = _connectionFactory.CreateConnection();
 
             const string sql = """
-                SELECT Id, Title, Body, IsRead, CreatedAt
-                FROM Notifications
+                SELECT Id, Message AS Body, 0 AS IsRead, CreatedAt
+                FROM NotificationLogs
                 WHERE UserId = @UserId
                 ORDER BY CreatedAt DESC
                 """;

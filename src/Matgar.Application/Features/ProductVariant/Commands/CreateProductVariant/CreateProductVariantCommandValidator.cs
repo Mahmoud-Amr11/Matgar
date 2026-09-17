@@ -16,7 +16,7 @@ namespace Matgar.Application.Features.ProductVariant.Commands.CreateProductVaria
                 .Matches(@"^[A-Za-z0-9\-_]+$").WithMessage("SKU can only contain letters, numbers, hyphens, and underscores.");
 
             RuleFor(c => c.Price)
-                .GreaterThan(0).WithMessage("Price must be greater than zero.")
+                .GreaterThanOrEqualTo(0).WithMessage("Price cannot be negative.")
                 .LessThanOrEqualTo(1_000_000).WithMessage("Price seems unreasonably high.");
 
             RuleFor(c => c.ImageUrl)
