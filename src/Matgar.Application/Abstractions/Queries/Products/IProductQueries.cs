@@ -14,6 +14,8 @@ namespace Matgar.Application.Abstractions.Queries.Products
             int offset,
             int pageSize,
             int page,
+            Guid? requestingUserId,
+            bool isAdmin,
             CancellationToken cancellationToken);
 
 

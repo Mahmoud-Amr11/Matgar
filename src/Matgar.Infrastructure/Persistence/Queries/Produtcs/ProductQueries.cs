@@ -24,6 +24,8 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
             int offset,
             int pageSize,
             int page,
+            Guid? requestingUserId,
+            bool isAdmin,
             CancellationToken cancellationToken)
         {
             using var connection = _connectionFactory.CreateConnection();
@@ -63,13 +65,11 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
                 LEFT JOIN ProductThumbnail pt ON pt.ProductId = p.Id AND pt.RowNum = 1
                 WHERE
                     (p.IsDeleted = 0 OR p.IsDeleted IS NULL)
-                    -- Suspended ممنوعة من القائمة العامة دايمًا، بغض النظر
-                    -- عن قيمة فلتر الـ Status اللي بعتها الـ client. لو
-                    -- سبنا الشرط ده جزء من "@Status IS NULL OR p.Status =
-                    -- @Status" بس، أي حد يقدر يبعت status=Suspended صراحة
-                    -- ويشوف المنتجات الموقوفة -- الاستبعاد هنا شرط مستقل
-                    -- ثابت لا يتأثر بالفلتر أصلًا.
-                    AND p.Status <> @SuspendedStatus
+                    AND (
+                        p.Status = @ActiveStatus
+                        OR @IsAdmin = 1
+                        OR (@RequestingUserId IS NOT NULL AND p.VendorId = @RequestingUserId)
+                    )
                     AND (@Search IS NULL OR p.Name LIKE '%' + @Search + '%')
                     AND (@CategoryId IS NULL OR p.CategoryId = @CategoryId)
                     AND (@Status IS NULL OR p.Status = @Status)
@@ -86,7 +86,9 @@ namespace Matgar.Infrastructure.Persistence.Queries.Produtcs
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
                 Status = status,
-                SuspendedStatus = ProductStatus.Suspended,
+                ActiveStatus = ProductStatus.Active,
+                IsAdmin = isAdmin,
+                RequestingUserId = requestingUserId,
                 Offset = offset,
                 PageSize = pageSize
             };

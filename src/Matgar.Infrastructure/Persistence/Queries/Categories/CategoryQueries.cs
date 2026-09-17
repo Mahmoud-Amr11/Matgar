@@ -35,8 +35,11 @@ namespace Matgar.Infrastructure.Persistence.Queries.Category
                 Name AS CategoryName
             FROM Categories
             WHERE
-                @Search IS NULL
-                OR Name LIKE '%' + @Search + '%'
+                (IsDeleted = 0 OR IsDeleted IS NULL)
+                AND (
+                    @Search IS NULL
+                    OR Name LIKE '%' + @Search + '%'
+                )
             ORDER BY CreatedAt DESC, Id
             OFFSET @Offset ROWS
             FETCH NEXT @PageSize ROWS ONLY;
@@ -44,8 +47,11 @@ namespace Matgar.Infrastructure.Persistence.Queries.Category
             SELECT COUNT(*)
             FROM Categories
             WHERE
-                @Search IS NULL
-                OR Name LIKE '%' + @Search + '%';
+                (IsDeleted = 0 OR IsDeleted IS NULL)
+                AND (
+                    @Search IS NULL
+                    OR Name LIKE '%' + @Search + '%'
+                );
             """;
 
             var parameters = new
@@ -91,13 +97,13 @@ namespace Matgar.Infrastructure.Persistence.Queries.Category
                     Slug AS CategorySlug,
                     Name AS CategoryName
                 FROM Categories
-                WHERE Id = @Id;
+                WHERE Id = @Id AND (IsDeleted = 0 OR IsDeleted IS NULL);
                 """;
 
             var command = new CommandDefinition(
                 sql,
                 new { Id = id },
-               cancellationToken: cancellationToken);
+                cancellationToken: cancellationToken);
 
             return await connection.QuerySingleOrDefaultAsync<CategoryResponse>(
                 command);

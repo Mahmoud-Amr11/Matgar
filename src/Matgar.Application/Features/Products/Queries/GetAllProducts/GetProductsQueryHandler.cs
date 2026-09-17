@@ -43,6 +43,8 @@ namespace Matgar.Application.Features.Products.Queries.GetAllProducts
                 pagination.Offset,
                 pagination.NormalizedPageSize,
                 pagination.NormalizedPage,
+                request.RequestingUserId,
+                request.IsAdmin,
                 cancellationToken);
 
             return result;

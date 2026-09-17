@@ -11,7 +11,9 @@ namespace Matgar.Application.Features.Products.Queries.GetAllProducts
        decimal? MaxPrice,
        ProductStatus? Status,
        int Page = 1,
-       int PageSize = 20
+       int PageSize = 20,
+       Guid? RequestingUserId = null,
+       bool IsAdmin = false
    ) : ICacheableQuery<PagedResult<ProductListItemResponse>>
     {
         public string CacheKey
@@ -23,11 +25,11 @@ namespace Matgar.Application.Features.Products.Queries.GetAllProducts
                     : Search.Trim().ToLowerInvariant();
 
                 return
-                    $"GetProducts_Search_{normalizedSearch}_Cat_{CategoryId}_Min_{MinPrice}_Max_{MaxPrice}_Status_{Status}_Page_{Page}_Size_{PageSize}";
+                    $"GetProducts_Search_{normalizedSearch}_Cat_{CategoryId}_Min_{MinPrice}_Max_{MaxPrice}_Status_{Status}_Page_{Page}_Size_{PageSize}_User_{RequestingUserId}_Admin_{IsAdmin}";
             }
         }
         public TimeSpan? Expiration => TimeSpan.FromMinutes(2);
 
-        public bool BypassCache => false;
+        public bool BypassCache => RequestingUserId.HasValue || IsAdmin;
     }
 }

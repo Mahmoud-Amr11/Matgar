@@ -40,7 +40,10 @@ namespace Matgar.Api.Controllers
             [FromQuery] int pageSize = 20,
             CancellationToken cancellationToken = default)
         {
-            var query = new GetProductsQuery(search, categoryId, minPrice, maxPrice, status, page, pageSize);
+            Guid? requestingUserId = Guid.TryParse(_currentUser.UserId, out var parsedId) ? parsedId : null;
+            var isAdmin = _currentUser.IsInRole("Admin");
+
+            var query = new GetProductsQuery(search, categoryId, minPrice, maxPrice, status, page, pageSize, requestingUserId, isAdmin);
             var result = await _mediator.Send(query, cancellationToken);
             return result.ToActionResult();
         }
