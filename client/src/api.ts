@@ -84,7 +84,7 @@ async function request<T>(path: string, init: RequestInit = {}, retry = true): P
     headers.set('Content-Type', 'application/json');
     const token = tokenStore.get();
     if (token) headers.set('Authorization', `Bearer ${token}`);
-    const response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers, credentials: 'include' });
+    const response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers, credentials: 'include', cache: 'no-store' });
     if (response.status === 401 && retry && !path.includes(REFRESH_PATH)) {
         const refreshed = await refresh();
         if (refreshed) return request<T>(path, init, false);

@@ -869,6 +869,10 @@ textarea {
     text-decoration: none;
 }
 
+.row-link {
+    font-weight: 600;
+}
+
 .row-main {
     display: flex;
     flex-direction: column;
@@ -1507,4 +1511,138 @@ textarea {
         grid-row: 2;
         justify-self: start;
     }
+}
+
+/* ---- product moderation (admin) ---- */
+
+.product-moderation-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.product-moderation-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 180px;
+}
+
+.product-moderation-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.product-moderation-info strong {
+    font-size: 14.5px;
+}
+
+.product-moderation-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.button-success {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.button-success:hover {
+    background: var(--primary-strong);
+    border-color: var(--primary-strong);
+}
+
+/* ---- modal ---- */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+}
+
+.modal {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+}
+
+.modal h3 {
+    margin: 0 0 8px;
+}
+
+.modal p {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.modal p strong {
+    color: inherit;
+}
+
+.modal .actions {
+    margin-top: 16px;
+}
+
+/* ---- dropdown menu ---- */
+
+.dropdown-wrap {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .12);
+    min-width: 170px;
+    z-index: 100;
+    padding: 4px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: 13.5px;
+    color: var(--fg);
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-item:hover {
+    background: var(--bg);
+}
+
+/* ---- notice success (banner) ---- */
+
+.success[role="status"] {
+    display: flex;
+    width: 100%;
+    margin-bottom: 12px;
 }

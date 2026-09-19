@@ -5,5 +5,8 @@
     <Project Path="src/Matgar.Domain/Matgar.Domain.csproj" />
     <Project Path="src/Matgar.Infrastructure/Matgar.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/Matgar.Application.Tests/Matgar.Application.Tests.csproj" />
+    <Project Path="tests/Matgar.LoadTests/Matgar.LoadTests.csproj" />
+  </Folder>
 </Solution>

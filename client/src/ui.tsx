@@ -34,6 +34,8 @@ export const IconShield = (props: IconProps) => <Svg {...props}><path d="M20 13c
 export const IconCreditCard = (props: IconProps) => <Svg {...props}><rect width="20" height="14" x="2" y="5" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></Svg>;
 export const IconClipboard = (props: IconProps) => <Svg {...props}><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /></Svg>;
 export const IconSend = (props: IconProps) => <Svg {...props}><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></Svg>;
+export const IconEye = (props: IconProps) => <Svg {...props}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></Svg>;
+export const IconDotsVertical = (props: IconProps) => <Svg {...props}><circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" /></Svg>;
 export const IconHome = (props: IconProps) => <Svg {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" /><polyline points="9 22 9 12 15 12 15 22" /></Svg>;
 
 // ---- format helpers ----

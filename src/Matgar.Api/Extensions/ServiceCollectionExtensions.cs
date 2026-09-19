@@ -69,6 +69,12 @@ namespace Matgar.Api.Extensions
                 });
             });
 
+            var rateLimiting = configuration.GetSection("RateLimiting");
+            var globalPermitLimit = rateLimiting.GetValue<int?>("GlobalPermitLimit") ?? 100;
+            var authPermitLimit = rateLimiting.GetValue<int?>("AuthPermitLimit") ?? 10;
+            var rateLimitWindow = TimeSpan.FromSeconds(
+                rateLimiting.GetValue<int?>("WindowSeconds") ?? 60);
+
             services.AddRateLimiter(options =>
             {
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -78,8 +84,8 @@ namespace Matgar.Api.Extensions
                         GetRateLimitPartitionKey(httpContext),
                         _ => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 100,
-                            Window = TimeSpan.FromMinutes(1),
+                            PermitLimit = globalPermitLimit,
+                            Window = rateLimitWindow,
                             QueueLimit = 0
                         }));
 
@@ -88,8 +94,8 @@ namespace Matgar.Api.Extensions
                         GetRateLimitPartitionKey(httpContext),
                         _ => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = 10,
-                            Window = TimeSpan.FromMinutes(1),
+                            PermitLimit = authPermitLimit,
+                            Window = rateLimitWindow,
                             QueueLimit = 0
                         }));
 

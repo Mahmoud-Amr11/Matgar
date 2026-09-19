@@ -11,6 +11,7 @@ import { ProductPage } from './pages/ProductPage';
 import { CartPage } from './pages/CartPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { OrderDetailPage } from './pages/OrderDetailPage';
+import { PaymentPage } from './pages/PaymentPage';
 import { AddressesPage } from './pages/AddressesPage';
 import { NotificationsPage } from './pages/NotificationsPage';
 import { ProfilePage } from './pages/ProfilePage';
@@ -137,6 +138,7 @@ export function AppRoutes() {
                 <Route path="/cart" element={<RequireAuth><CartPage /></RequireAuth>} />
                 <Route path="/orders" element={<RequireAuth><OrdersPage /></RequireAuth>} />
                 <Route path="/orders/:id" element={<RequireAuth><OrderDetailPage /></RequireAuth>} />
+                <Route path="/orders/:id/pay" element={<RequireAuth><PaymentPage /></RequireAuth>} />
                 <Route path="/addresses" element={<RequireAuth><AddressesPage /></RequireAuth>} />
                 <Route path="/notifications" element={<RequireAuth><NotificationsPage /></RequireAuth>} />
                 <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />

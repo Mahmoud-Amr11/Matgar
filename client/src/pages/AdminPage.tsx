@@ -1,7 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { api } from '../api';
-import { useLoad, useMutation, Spinner, ErrorNotice, EmptyState, StatusBadge, money, productStatusLabel, IconCheck, IconPlus, IconPencil, IconTrash, IconX } from '../ui';
-import type { Coupon } from '../types';
+import { useLoad, useMutation, Spinner, ErrorNotice, EmptyState, StatusBadge, money, productStatusLabel, IconCheck, IconPlus, IconPencil, IconTrash, IconX, IconDotsVertical, IconEye } from '../ui';
+import type { Coupon, ProductListItem } from '../types';
 
 type Tab = 'orders' | 'products' | 'categories' | 'coupons';
 
@@ -55,53 +55,143 @@ function AdminOrders() {
 
 function AdminProducts() {
     const products = useLoad(() => api.products({ pageSize: 100 }), []);
-    const moderate = useMutation((input: { id: string; type: 'approve' | 'suspend'; reason?: string }) =>
-        input.type === 'approve' ? api.approveProduct(input.id) : api.suspendProduct(input.id, input.reason ?? 'Suspended by admin'));
+    const approve = useMutation((id: string) => api.approveProduct(id));
+    const suspend = useMutation((input: { id: string; reason: string }) => api.suspendProduct(input.id, input.reason));
 
-    const [suspendReason, setSuspendReason] = useState<Record<string, string>>({});
+    const [modal, setModal] = useState<{ type: 'approve' | 'suspend'; product: ProductListItem } | null>(null);
+    const [menuId, setMenuId] = useState<string | null>(null);
+    const [successMsg, setSuccessMsg] = useState<string | null>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!menuId) return;
+        const close = (e: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuId(null);
+        };
+        document.addEventListener('mousedown', close);
+        return () => document.removeEventListener('mousedown', close);
+    }, [menuId]);
+
+    useEffect(() => {
+        if (!successMsg) return;
+        const t = setTimeout(() => setSuccessMsg(null), 3000);
+        return () => clearTimeout(t);
+    }, [successMsg]);
+
+    const doApprove = async () => {
+        if (!modal || modal.type !== 'approve') return;
+        const ok = await approve.run(modal.product.productId);
+        if (ok) {
+            setModal(null);
+            setSuccessMsg(`"${modal.product.productName}" has been approved.`);
+            products.reload();
+        }
+    };
+
+    const doSuspend = async (event: FormEvent) => {
+        event.preventDefault();
+        if (!modal || modal.type !== 'suspend') return;
+        const form = event.target as HTMLFormElement;
+        const reason = (form.elements.namedItem('suspendReason') as HTMLInputElement).value.trim();
+        if (!reason) return;
+        const ok = await suspend.run({ id: modal.product.productId, reason });
+        if (ok) {
+            setModal(null);
+            setSuccessMsg(`"${modal.product.productName}" has been suspended.`);
+            products.reload();
+        }
+    };
 
     if (products.loading) return <Spinner label="Loading products…" />;
     if (products.error) return <ErrorNotice message={products.error} onRetry={products.reload} />;
 
-    const runModeration = async (id: string, type: 'approve' | 'suspend') => {
-        const ok = await moderate.run({ id, type, reason: type === 'suspend' ? suspendReason[id] : undefined });
-        if (ok) products.reload();
-    };
-
     return (
-        <div className="list">
-            {products.data?.items.length === 0 && <EmptyState title="No products" />}
-            {products.data?.items.map(product => (
-                <div className="row-card" key={product.productId}>
-                    <div className="row-main">
-                        <strong>{product.productName}</strong>
-                        <span className="muted">{product.categoryName}</span>
-                        <StatusBadge status={productStatusLabel(product.status)} />
-                    </div>
-                    <div className="row-side wrap">
-                        {product.status === 1 && (
-                            <button type="button" className="button button-small" disabled={moderate.loading} onClick={() => void runModeration(product.productId, 'approve')}>
-                                <IconCheck size={14} /> Approve
-                            </button>
-                        )}
-                        {product.status !== 3 && (
+        <div className="stack">
+            {successMsg && <div className="success" role="status">{successMsg}</div>}
+
+            <div className="list">
+                {products.data?.items.length === 0 && <EmptyState title="No products" />}
+                {products.data?.items.map(product => {
+                    const status = product.status;
+                    return (
+                        <div className="product-moderation-card" key={product.productId}>
+                            <div className="product-moderation-body">
+                                <div className="product-moderation-info">
+                                    <strong>{product.productName}</strong>
+                                    <span className="muted">{product.categoryName}</span>
+                                </div>
+                                <StatusBadge status={productStatusLabel(status)} />
+                            </div>
+                            <div className="product-moderation-actions">
+                                {status === 1 && (
+                                    <>
+                                        <button type="button" className="button button-small button-success" disabled={approve.loading || suspend.loading} onClick={() => setModal({ type: 'approve', product })}>
+                                            <IconCheck size={14} /> Approve
+                                        </button>
+                                        <button type="button" className="button button-small button-danger" disabled={approve.loading || suspend.loading} onClick={() => setModal({ type: 'suspend', product })}>
+                                            Suspend
+                                        </button>
+                                    </>
+                                )}
+                                {status === 2 && (
+                                    <button type="button" className="button button-small button-danger" disabled={approve.loading || suspend.loading} onClick={() => setModal({ type: 'suspend', product })}>
+                                        Suspend
+                                    </button>
+                                )}
+                                {status === 0 && (
+                                    <span className="muted" style={{ fontSize: 13 }}>Waiting for vendor to submit</span>
+                                )}
+                                <div className="dropdown-wrap" ref={menuId === product.productId ? menuRef : undefined}>
+                                    <button type="button" className="icon-button" aria-label="More actions" onClick={() => setMenuId(menuId === product.productId ? null : product.productId)}>
+                                        <IconDotsVertical size={16} />
+                                    </button>
+                                    {menuId === product.productId && (
+                                        <div className="dropdown-menu">
+                                            <a className="dropdown-item" href={`/products/${product.productId}`} target="_blank" rel="noopener noreferrer" onClick={() => setMenuId(null)}>
+                                                <IconEye size={14} /> View product
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {modal && (
+                <div className="modal-overlay" onClick={() => setModal(null)}>
+                    <div className="modal card" onClick={e => e.stopPropagation()}>
+                        {modal.type === 'approve' && (
                             <>
-                                <input
-                                    aria-label="Suspend reason"
-                                    className="small-input"
-                                    placeholder="Reason…"
-                                    value={suspendReason[product.productId] ?? ''}
-                                    onChange={event => setSuspendReason({ ...suspendReason, [product.productId]: event.target.value })}
-                                />
-                                <button type="button" className="button button-small button-danger-on" disabled={moderate.loading} onClick={() => void runModeration(product.productId, 'suspend')}>
-                                    Suspend
-                                </button>
+                                <h3>Approve Product</h3>
+                                <p>Are you sure you want to approve <strong>{modal.product.productName}</strong>?</p>
+                                <p className="muted" style={{ fontSize: 13 }}>The product will become visible to customers.</p>
+                                {approve.error && <div className="error" role="alert">{approve.error}</div>}
+                                <div className="actions">
+                                    <button type="button" className="button button-outline" disabled={approve.loading} onClick={() => setModal(null)}>Cancel</button>
+                                    <button type="button" className="button button-success" disabled={approve.loading} onClick={() => void doApprove()}>{approve.loading ? 'Approving…' : 'Approve'}</button>
+                                </div>
                             </>
                         )}
-                        {product.status === 3 && <span className="muted">Suspended</span>}
+                        {modal.type === 'suspend' && (
+                            <form onSubmit={e => void doSuspend(e)}>
+                                <h3>Suspend Product</h3>
+                                <p>Suspending <strong>{modal.product.productName}</strong>. This product will no longer be visible to customers.</p>
+                                <label className="field">
+                                    <span className="field-label">Reason</span>
+                                    <input name="suspendReason" required maxLength={500} placeholder="Enter the reason for suspension…" />
+                                </label>
+                                {suspend.error && <div className="error" role="alert">{suspend.error}</div>}
+                                <div className="actions">
+                                    <button type="button" className="button button-outline" disabled={suspend.loading} onClick={() => setModal(null)}>Cancel</button>
+                                    <button type="submit" className="button button-danger" disabled={suspend.loading}>{suspend.loading ? 'Suspending…' : 'Suspend Product'}</button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
-            ))}
+            )}
         </div>
     );
 }

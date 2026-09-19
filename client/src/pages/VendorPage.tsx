@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../api';
 import { useLoad, useMutation, Spinner, ErrorNotice, EmptyState, StatusBadge, money, productStatusLabel, IconPlus, IconPencil, IconTrash, IconSend, IconMinus } from '../ui';
 import { VariantForm } from '../components/VariantForm';
@@ -54,7 +55,7 @@ function VendorOrders() {
                 const next = nextActions[order.status];
                 return (
                     <div className="vendor-products-grid vendor-orders-grid row" key={order.id}>
-                        <strong>#{order.id.slice(0, 8).toUpperCase()}</strong>
+                        <Link to={`/orders/${order.id}`} className="row-link">#{order.id.slice(0, 8).toUpperCase()}</Link>
                         <span className="muted">{new Date(order.createdAt).toLocaleString()}</span>
                         <span>{money(order.totalAmount)}</span>
                         <span><StatusBadge status={order.status} /></span>

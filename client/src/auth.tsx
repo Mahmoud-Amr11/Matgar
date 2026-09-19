@@ -40,6 +40,18 @@ function loadCachedUser(): User | null {
     return userFromAccessToken(tokenStore.get());
 }
 
+export function isCustomer(user: User | null): boolean {
+    return user?.roles.includes('Customer') ?? false;
+}
+
+export function isVendor(user: User | null): boolean {
+    return user?.roles.includes('Vendor') ?? false;
+}
+
+export function isAdmin(user: User | null): boolean {
+    return user?.roles.includes('Admin') ?? false;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(() => loadCachedUser());
     const [loading] = useState(false);

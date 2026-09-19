@@ -1,0 +1,18 @@
+2026-09-17 20:50:36.762 +03:00 [INF] [ThreadId:7] NBomber 6.6.0 started a new session: 2026-09-17_17-50-36_e7e51f1
+2026-09-17 20:50:36.771 +03:00 [INF] [ThreadId:7] NBomber started as single node
+2026-09-17 20:50:36.775 +03:00 [INF] [ThreadId:7] License validation....
+2026-09-17 20:50:36.777 +03:00 [WRN] [ThreadId:7] THIS VERSION IS FREE ONLY FOR PERSONAL USE. You can't use it for an organization.
+2026-09-17 20:50:36.897 +03:00 [INF] [ThreadId:7] Reports folder: D:\Matgar\src\reports
+2026-09-17 20:50:36.897 +03:00 [INF] [ThreadId:7] Plugins: no plugins were loaded
+2026-09-17 20:50:36.898 +03:00 [INF] [ThreadId:7] Reporting sinks: no reporting sinks were loaded
+2026-09-17 20:50:36.898 +03:00 [INF] [ThreadId:7] Starting init...
+2026-09-17 20:50:36.908 +03:00 [INF] [ThreadId:7] Target scenarios: catalog_browsing, catalog_details, catalog_search, authenticated_catalog, auth, health
+2026-09-17 20:50:36.911 +03:00 [INF] [ThreadId:7] Init finished
+2026-09-17 20:50:37.009 +03:00 [INF] [ThreadId:7] Starting warm up...
+2026-09-17 20:50:37.010 +03:00 [INF] [ThreadId:7] Warm up for scenarios: catalog_browsing, catalog_details, catalog_search, authenticated_catalog, health
+2026-09-17 20:50:37.013 +03:00 [INF] [ThreadId:7] Warm up duration: 00:00:01
+2026-09-17 20:50:39.055 +03:00 [INF] [ThreadId:16] Starting bombing...
+2026-09-17 20:50:43.074 +03:00 [WRN] [ThreadId:22] Stopping test early: Stopping test because of too many fails. Scenario 'health' contains '5365' fails.
+2026-09-17 20:50:46.117 +03:00 [INF] [ThreadId:18] Calculating final statistics...
+2026-09-17 20:50:47.027 +03:00 [INF] [ThreadId:24] Reports saved in folder: D:\Matgar\src\reports
+2026-09-17 20:50:47.028 +03:00 [WRN] [ThreadId:24] THIS VERSION IS FREE ONLY FOR PERSONAL USE. You can't use it for an organization.
