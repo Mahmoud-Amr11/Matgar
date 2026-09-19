@@ -41,8 +41,13 @@ services:
       ASPNETCORE_ENVIRONMENT: Docker
       ASPNETCORE_URLS: http://+:8080
       # Env vars override appsettings.Docker.json (precedence).
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=MatgarDB;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Matgar@12345};TrustServerCertificate=True;Encrypt=True;Command Timeout=30;Connect Timeout=30"
-      ConnectionStrings__Redis: "redis:6379"
+      # Required values come from .env; the compose file refuses to start if
+      # DB_CONNECTION_STRING or JWT_SIGNING_KEY are missing.
+      ConnectionStrings__DefaultConnection: ${DB_CONNECTION_STRING:?-set DB_CONNECTION_STRING in .env}
+      ConnectionStrings__Redis: ${REDIS_CONNECTION_STRING:-redis:6379}
+      JwtOptions__Key: ${JWT_SIGNING_KEY:?-set JWT_SIGNING_KEY in .env}
+      EmailOptions__Email: ${EMAIL_ADDRESS:-}
+      EmailOptions__Password: ${EMAIL_APP_PASSWORD:-}
     ports:
       - "5203:8080"
     depends_on:

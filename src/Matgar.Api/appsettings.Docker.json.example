@@ -1,6 +1,6 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=sqlserver;Database=MatgarDB;User Id=sa;Password=Matgar@12345;TrustServerCertificate=True;Encrypt=True;Command Timeout=30;Connect Timeout=30",
+    "DefaultConnection": "Server=sqlserver,1433;Database=MatgarDB;User Id=sa;Password=<CHANGE_ME_STRONG>;TrustServerCertificate=True;Encrypt=True",
     "Redis": "redis:6379"
   },
 
@@ -18,7 +18,7 @@
   },
 
   "JwtOptions": {
-    "Key": "DuZzT3RnsdAalAmfLVimcO1Sm1l6kfDAcssX84xYkJY=",
+    "Key": "<32+_BYTE_SECRET>",
     "Issuer": "Matgar.Api",
     "Audience": "Matgar.Client",
     "AccessTokenDurationMinutes": 15,
@@ -28,8 +28,8 @@
   "EmailOptions": {
     "Host": "smtp.gmail.com",
     "Port": 587,
-    "Email": "m7moud.3mr.ma7moud@gmail.com",
+    "Email": "<YOUR_GMAIL_ADDRESS>",
     "DisplayName": "Matgar",
-    "Password": "qeyy doxx gbeh zzxn"
+    "Password": "<YOUR_GMAIL_APP_PASSWORD>"
   }
 }

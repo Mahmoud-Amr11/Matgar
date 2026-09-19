@@ -1,6 +1,6 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=.;Initial Catalog=MatgarDB;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False;Command Timeout=30",
+    "DefaultConnection": "Data Source=.;Initial Catalog=MatgarDB;Integrated Security=True;Encrypt=True;Trust Server Certificate=True;Command Timeout=30",
     "Redis": "localhost:6379"
   },
 
@@ -17,13 +17,11 @@
     "WindowSeconds": 60
   },
 
-
   "Serilog": {
     "MinimumLevel": {
       "Default": "Information",
       "Override": {
         "Microsoft": "Warning",
-        "Microsoft.AspNetCore.Hosting.Diafnostics": "Error",
         "Microsoft.Hosting.Lifetime": "Information"
       }
     },
@@ -53,15 +51,13 @@
   "EmailOptions": {
     "Host": "smtp.gmail.com",
     "Port": 587,
-    "Email": "m7moud.3mr.ma7moud@gmail.com",
+    "Email": "<YOUR_GMAIL_ADDRESS>",
     "DisplayName": "Matgar",
-    "Password": "qeyy doxx gbeh zzxn"
+    "Password": "<YOUR_GMAIL_APP_PASSWORD>"
   },
 
-
-
   "JwtOptions": {
-    "Key": "DuZzT3RnsdAalAmfLVimcO1Sm1l6kfDAcssX84xYkJY=",
+    "Key": "<32+_BYTE_SECRET>",
     "Issuer": "Matgar.Api",
     "Audience": "Matgar.Client",
     "AccessTokenDurationMinutes": 15,
