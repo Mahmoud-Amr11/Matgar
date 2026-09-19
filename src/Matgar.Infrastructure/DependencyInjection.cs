@@ -186,6 +186,11 @@ namespace Matgar.Infrastructure
         {
             using var scope = serviceProvider.CreateScope();
 
+            var dbContext = scope.ServiceProvider
+                .GetRequiredService<ApplicationDbContext>();
+
+            await dbContext.Database.MigrateAsync();
+
             var runner = scope.ServiceProvider
                 .GetRequiredService<DataSeederRunner>();
 

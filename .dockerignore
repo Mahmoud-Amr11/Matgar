@@ -1,0 +1,23 @@
+# Build context is the repository root. Exclude anything not required
+# for the API image to keep the context small and the build fast.
+
+**/bin/
+**/obj/
+**/Logs/
+
+.git/
+.gitignore
+.gitattributes
+.github/
+.vs/
+.vscode/
+.idea/
+
+reports/
+tests/
+client/
+package-lock.json
+
+**/.env
+**/*.user
+**/*.suo
