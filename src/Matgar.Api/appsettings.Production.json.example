@@ -1,32 +1,28 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "<SQL_CONNECTION_STRING>",
-    "Redis": "<REDIS_CONNECTION_STRING>"
+    "DefaultConnection": "YOUR_CONNECTION_STRING",
+    "Redis": "YOUR_REDIS_CONNECTION_STRING"
   },
-
   "Cors": {
     "AllowedOrigins": [
       "https://yourdomain.com",
       "https://www.yourdomain.com"
     ]
   },
-
   "RateLimiting": {
     "GlobalPermitLimit": 100000,
     "AuthPermitLimit": 10000,
     "WindowSeconds": 60
   },
-
   "EmailOptions": {
     "Host": "smtp.gmail.com",
     "Port": 587,
-    "Email": "<YOUR_GMAIL_ADDRESS>",
+    "Email": "YOUR_GMAIL_ADDRESS",
     "DisplayName": "Matgar",
-    "Password": "<YOUR_GMAIL_APP_PASSWORD>"
+    "Password": "YOUR_SMTP_PASSWORD"
   },
-
   "JwtOptions": {
-    "Key": "<32+_BYTE_SECRET>",
+    "Key": "YOUR_JWT_KEY",
     "Issuer": "Matgar.Api",
     "Audience": "Matgar.Client",
     "AccessTokenDurationMinutes": 15,
