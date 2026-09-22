@@ -1,4 +1,5 @@
 ﻿using Matgar.Domain.Entities;
+using Matgar.Domain.Entities.Common;
 using Matgar.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace Matgar.Infrastructure.Persistence.Contexts
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+        public DbSet<ProcessedWebhook> ProcessedWebhooks => Set<ProcessedWebhook>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

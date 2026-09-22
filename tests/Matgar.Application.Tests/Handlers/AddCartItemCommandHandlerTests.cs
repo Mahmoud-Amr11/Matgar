@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Matgar.Application.Abstractions.Identity;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Features.Cart.Commands.AddCartItem;
 
 namespace Matgar.Application.Tests.Handlers;

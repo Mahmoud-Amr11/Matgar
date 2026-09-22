@@ -1,15 +1,20 @@
 ﻿using Hangfire;
-using Matgar.Application.Abstractions.Dapper;
+using Matgar.Application.Abstractions.Caching;
+using Matgar.Application.Abstractions.Email;
 using Matgar.Application.Abstractions.Identity;
-using Matgar.Application.Abstractions.Queries.Addresses;
-using Matgar.Application.Abstractions.Queries.Cart;
-using Matgar.Application.Abstractions.Queries.Category;
-using Matgar.Application.Abstractions.Queries.ProductReview;
-using Matgar.Application.Abstractions.Queries.Products;
-using Matgar.Application.Abstractions.Queries.ProductVariant;
-using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Abstractions.Persistence.Dapper;
+using Matgar.Application.Abstractions.Persistence.Queries.Addresses;
+using Matgar.Application.Abstractions.Persistence.Queries.Cart;
+using Matgar.Application.Abstractions.Persistence.Queries.Category;
+using Matgar.Application.Abstractions.Persistence.Queries.Notifications;
+using Matgar.Application.Abstractions.Persistence.Queries.Orders;
+using Matgar.Application.Abstractions.Persistence.Queries.ProductReview;
+using Matgar.Application.Abstractions.Persistence.Queries.Products;
+using Matgar.Application.Abstractions.Persistence.Queries.ProductVariant;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Abstractions.Services;
-using Matgar.Application.Common.Caching;
+using Matgar.Infrastructure.Caching;
+using Matgar.Infrastructure.Email;
 using Matgar.Infrastructure.Identity.Entities;
 using Matgar.Infrastructure.Identity.Services;
 using Matgar.Infrastructure.Options;
@@ -17,14 +22,14 @@ using Matgar.Infrastructure.Otions;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Matgar.Infrastructure.Persistence.Dapper;
 using Matgar.Infrastructure.Persistence.Interceptor;
+using Matgar.Infrastructure.Persistence.Outbox;
 using Matgar.Infrastructure.Persistence.Queries.Addresses;
 using Matgar.Infrastructure.Persistence.Queries.Cart;
 using Matgar.Infrastructure.Persistence.Queries.Category;
+using Matgar.Infrastructure.Persistence.Queries.Notifications;
 using Matgar.Infrastructure.Persistence.Queries.ProductReview;
 using Matgar.Infrastructure.Persistence.Queries.ProductVariant;
 using Matgar.Infrastructure.Persistence.Queries.Produtcs;
-using Matgar.Application.Abstractions.Queries.Notifications;
-using Matgar.Infrastructure.Persistence.Queries.Notifications;
 using Matgar.Infrastructure.Persistence.Repositories;
 using Matgar.Infrastructure.Persistence.Seeders;
 using Matgar.Infrastructure.Services;
@@ -34,6 +39,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 
@@ -68,8 +74,27 @@ namespace Matgar.Infrastructure
             services.AddScoped<IProductVariantQueries, ProductVariantQueries>();
             services.AddScoped<IProductReviewQueries, ProductReviewQueries>();
             services.AddScoped<IPurchaseVerificationQueries, PurchaseVerificationQueries>();
-            services.AddScoped<Matgar.Application.Abstractions.Queries.Orders.IOrderQueries, Matgar.Infrastructure.Persistence.Queries.Orders.OrderQueries>();
+            services.AddScoped<IOrderQueries, Matgar.Infrastructure.Persistence.Queries.Orders.OrderQueries>();
             services.AddScoped<INotificationQueries, NotificationQueries>();
+            services
+            .AddOptions<PaymobSettings>()
+            .Bind(configuration.GetSection(PaymobSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+
+            services.AddHttpClient<IPaymentGateway, PaymobPaymentGateway>(
+     (serviceProvider, client) =>
+     {
+         var options =
+             serviceProvider
+                 .GetRequiredService<
+                     IOptions<PaymobSettings>>()
+                 .Value;
+
+         client.BaseAddress =
+             new Uri(options.BaseUrl);
+     });
             return services;
         }
 

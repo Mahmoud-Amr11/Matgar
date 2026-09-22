@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using Matgar.Application.Abstractions.Dapper;
-using Matgar.Application.Abstractions.Queries.ProductReview;
+using Matgar.Application.Abstractions.Persistence.Dapper;
+using Matgar.Application.Abstractions.Persistence.Queries.ProductReview;
 
 namespace Matgar.Infrastructure.Persistence.Queries.ProductReview
 {

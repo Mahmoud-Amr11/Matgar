@@ -1,6 +1,6 @@
 using Dapper;
-using Matgar.Application.Abstractions.Dapper;
-using Matgar.Application.Abstractions.Queries.Addresses;
+using Matgar.Application.Abstractions.Persistence.Dapper;
+using Matgar.Application.Abstractions.Persistence.Queries.Addresses;
 using Matgar.Application.Features.Addresses.Queries.Responses;
 
 namespace Matgar.Infrastructure.Persistence.Queries.Addresses

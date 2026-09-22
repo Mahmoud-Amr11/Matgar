@@ -1,4 +1,4 @@
-using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Domain.Entities;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;

@@ -12,6 +12,8 @@ namespace Matgar.Infrastructure.Persistence.Configurations
 
             builder.HasKey(s => s.Id);
 
+            builder.HasQueryFilter(s => !s.ProductVariant.IsDeleted);
+
             builder.Property(s => s.QuantityOnHand)
                 .IsRequired();
 

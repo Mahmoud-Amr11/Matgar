@@ -1,5 +1,5 @@
 ﻿using Matgar.Application.Abstractions.Identity;
-using Matgar.Domain.Entities;
+using Matgar.Domain.Entities.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;

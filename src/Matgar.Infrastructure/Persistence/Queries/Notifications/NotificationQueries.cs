@@ -1,6 +1,6 @@
 using Dapper;
-using Matgar.Application.Abstractions.Dapper;
-using Matgar.Application.Abstractions.Queries.Notifications;
+using Matgar.Application.Abstractions.Persistence.Dapper;
+using Matgar.Application.Abstractions.Persistence.Queries.Notifications;
 using Matgar.Application.Features.Notifications.Queries.GetNotifications;
 
 namespace Matgar.Infrastructure.Persistence.Queries.Notifications

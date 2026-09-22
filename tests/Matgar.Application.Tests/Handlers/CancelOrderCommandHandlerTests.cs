@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Matgar.Application.Abstractions.Identity;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Features.Orders.Commands.CancelOrder;
 
 namespace Matgar.Application.Tests.Handlers;
@@ -9,7 +10,7 @@ public class CancelOrderCommandHandlerTests
     private readonly Guid _userId = Guid.NewGuid();
     private readonly Guid _orderId = Guid.NewGuid();
     private readonly Guid _variantId = Guid.NewGuid();
-    private readonly Mock<IGenericRepository<Order>> _orders = new();
+    private readonly Mock<IOrderRepository> _orders = new();
     private readonly Mock<IGenericRepository<OrderItem>> _orderItems = new();
     private readonly Mock<IGenericRepository<StockItem>> _stockItems = new();
     private readonly Mock<IGenericRepository<OutboxMessage>> _outbox = new();

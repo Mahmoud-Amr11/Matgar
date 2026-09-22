@@ -1,4 +1,6 @@
-﻿namespace Matgar.Domain.Entities
+﻿using Matgar.Domain.Entities.Common;
+
+namespace Matgar.Domain.Entities
 {
     public class Category : BaseAuditEntity
     {

@@ -3,15 +3,16 @@ using Matgar.Application.Common.Pagination;
 using Matgar.Application.Common.Results;
 using Matgar.Application.Common.Pagination;
 using MediatR;
+using Matgar.Application.Abstractions.Persistence.Queries.Orders;
 
 namespace Matgar.Application.Features.Orders.Queries.GetVendorOrders
 {
     public class GetVendorOrdersQueryHandler : IRequestHandler<GetVendorOrdersQuery, Result<PagedResult<VendorOrderResponse>>>
     {
-        private readonly Matgar.Application.Abstractions.Queries.Orders.IOrderQueries _orderQueries;
+        private readonly IOrderQueries _orderQueries;
         private readonly ICurrentUserService _currentUser;
 
-        public GetVendorOrdersQueryHandler(Matgar.Application.Abstractions.Queries.Orders.IOrderQueries orderQueries, ICurrentUserService currentUser)
+        public GetVendorOrdersQueryHandler(IOrderQueries orderQueries, ICurrentUserService currentUser)
         {
             _orderQueries = orderQueries;
             _currentUser = currentUser;

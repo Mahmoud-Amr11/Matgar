@@ -1,3 +1,4 @@
+using Matgar.Application.Abstractions.Persistence.Queries.Orders;
 using Matgar.Application.Common.Pagination;
 using Matgar.Application.Common.Results;
 using MediatR;
@@ -6,9 +7,9 @@ namespace Matgar.Application.Features.Orders.Queries.GetAllOrders
 {
     public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, Result<PagedResult<GetAllOrdersResponse>>>
     {
-        private readonly Matgar.Application.Abstractions.Queries.Orders.IOrderQueries _orderQueries;
+        private readonly IOrderQueries _orderQueries;
 
-        public GetAllOrdersQueryHandler(Matgar.Application.Abstractions.Queries.Orders.IOrderQueries orderQueries)
+        public GetAllOrdersQueryHandler(IOrderQueries orderQueries)
         {
             _orderQueries = orderQueries;
         }

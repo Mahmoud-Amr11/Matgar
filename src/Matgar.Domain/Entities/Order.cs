@@ -1,4 +1,6 @@
-﻿namespace Matgar.Domain.Entities
+﻿using Matgar.Domain.Entities.Common;
+
+namespace Matgar.Domain.Entities
 {
     public class Order : BaseAuditEntity
     {
@@ -22,5 +24,52 @@
 
         public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
         public Payment? Payment { get; set; }
+
+        public string Reference => Id.ToString();
+        public decimal Total => TotalAmount;
+        public bool IsPaid => Payment is not null && Payment.Status == PaymentStatus.Succeeded;
+
+        public void MarkPaid(string transactionReference)
+        {
+            var payment = EnsurePayment();
+            payment.Status = PaymentStatus.Succeeded;
+            payment.TransactionReference = transactionReference;
+            payment.CompletedAt = DateTime.UtcNow;
+        }
+
+        public void MarkRefunded()
+        {
+            EnsurePayment().Status = PaymentStatus.Refunded;
+        }
+
+        public void MarkVoided()
+        {
+            var payment = EnsurePayment();
+            payment.Status = PaymentStatus.Failed;
+            payment.FailureReason ??= "Voided";
+        }
+
+        public void MarkPaymentFailed(string? reason = null)
+        {
+            var payment = EnsurePayment();
+            payment.Status = PaymentStatus.Failed;
+            payment.FailureReason ??= reason ?? "Payment failed";
+        }
+
+        private Payment EnsurePayment()
+        {
+            if (Payment is null)
+            {
+                Payment = new Payment
+                {
+                    OrderId = Id,
+                    Provider = PaymentProvider.Paymob,
+                    Amount = TotalAmount,
+                    Status = PaymentStatus.Pending
+                };
+            }
+
+            return Payment;
+        }
     }
 }

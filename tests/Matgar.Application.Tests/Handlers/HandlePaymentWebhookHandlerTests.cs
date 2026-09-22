@@ -1,102 +1,160 @@
-using System.Linq.Expressions;
-using Matgar.Application.Features.Payments.Commands.HandleWebhook;
-using Matgar.Application.Features.Payments.Handlers;
+using Matgar.Application.Abstractions.Persistence.Repositories;
+using Matgar.Application.Abstractions.Services;
+using Matgar.Application.DTOs.Payments;
+using Matgar.Application.Features.Payments.Commands.HandlePaymobWebhook;
+using Microsoft.Extensions.Logging;
 
 namespace Matgar.Application.Tests.Handlers;
 
 public class HandlePaymentWebhookHandlerTests
 {
-    private readonly string _txRef = Guid.NewGuid().ToString("N");
-    private readonly Mock<IGenericRepository<Payment>> _payments = new();
+    private readonly Mock<IUnitOfWork> _unitOfWork = new();
+    private readonly Mock<IPaymentGateway> _gateway = new();
+    private readonly Mock<IProcessedWebhookRepository> _webhooks = new();
+    private readonly Mock<IOrderRepository> _orders = new();
 
-    private HandlePaymentWebhookHandler CreateHandler()
+    private HandlePaymobWebhookCommandHandler CreateHandler()
     {
-        var unitOfWork = new Mock<IUnitOfWork>();
-        unitOfWork.Setup(u => u.Payments).Returns(_payments.Object);
-        unitOfWork.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
-        return new HandlePaymentWebhookHandler(unitOfWork.Object);
+        _unitOfWork.Setup(u => u.ProcessedWebhooks).Returns(_webhooks.Object);
+        _unitOfWork.Setup(u => u.Orders).Returns(_orders.Object);
+        _unitOfWork.Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(1);
+
+        return new HandlePaymobWebhookCommandHandler(
+            _gateway.Object,
+            _unitOfWork.Object,
+            new Mock<ILogger<HandlePaymobWebhookCommandHandler>>().Object);
     }
 
-    private void PaymentsAre(params Payment[] payments)
-    {
-        _payments.Setup(r => r.FindAsync(It.IsAny<Expression<Func<Payment, bool>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(payments.ToList());
-    }
+    private void GatewayReturns(PaymentWebhookResult? result)
+        => _gateway.Setup(g => g.VerifyWebhookAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(result);
+
+    private void WebhookRegistered(bool registered)
+        => _webhooks.Setup(r => r.TryRegisterAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(registered);
+
+    private void OrderFound(Order? order)
+        => _orders.Setup(r => r.GetByReferenceAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(order);
+
+    private static Order OrderWithTotal(decimal total) => new() { Id = Guid.NewGuid(), TotalAmount = total };
+
+    private static PaymentWebhookResult SuccessResult(string reference, long amountCents = 10000)
+        => new()
+        {
+            TransactionId = 98765,
+            OrderReference = reference,
+            AmountCents = amountCents,
+            Success = true
+        };
 
     [Fact]
-    public async Task Handle_should_register_unknown_transaction_as_succeeded()
+    public async Task Handle_should_reject_webhook_with_invalid_signature()
     {
-        PaymentsAre();
-
-        Payment? captured = null;
-        _payments.Setup(r => r.AddAsync(It.IsAny<Payment>(), It.IsAny<CancellationToken>()))
-            .Callback<Payment, CancellationToken>((p, _) => captured = p)
-            .Returns(Task.CompletedTask);
+        GatewayReturns(null);
 
         var result = await CreateHandler().Handle(
-            new HandlePaymentWebhookCommand(_txRef, "success", "{}"),
+            new HandlePaymobWebhookCommand("{}", "bad-hmac"),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeTrue();
-        captured.Should().NotBeNull();
-        captured!.TransactionReference.Should().Be(_txRef);
-        captured.Status.Should().Be(PaymentStatus.Succeeded);
+        result.Should().Be(WebhookOutcome.InvalidSignature);
+        _webhooks.Verify(r => r.TryRegisterAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task Handle_should_mark_failure_for_unknown_transaction()
+    public async Task Handle_should_be_idempotent_for_duplicate_events()
     {
-        PaymentsAre();
+        GatewayReturns(SuccessResult("order-ref"));
+        WebhookRegistered(false);
 
         var result = await CreateHandler().Handle(
-            new HandlePaymentWebhookCommand(_txRef, "failed", "{}"),
+            new HandlePaymobWebhookCommand("{}", "hmac"),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeTrue();
+        result.Should().Be(WebhookOutcome.Duplicate);
     }
 
     [Fact]
-    public async Task Handle_should_update_pending_payment_to_succeeded()
+    public async Task Handle_should_ignore_webhook_for_unknown_order()
     {
-        var payment = new Payment { TransactionReference = _txRef, Status = PaymentStatus.Pending };
-        PaymentsAre(payment);
+        GatewayReturns(SuccessResult("unknown-ref"));
+        WebhookRegistered(true);
+        OrderFound(null);
 
         var result = await CreateHandler().Handle(
-            new HandlePaymentWebhookCommand(_txRef, "success", "{}"),
+            new HandlePaymobWebhookCommand("{}", "hmac"),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeTrue();
-        payment.Status.Should().Be(PaymentStatus.Succeeded);
-        _payments.Verify(r => r.Update(payment), Times.Once);
+        result.Should().Be(WebhookOutcome.Ignored);
     }
 
     [Fact]
-    public async Task Handle_should_be_idempotent_when_payment_already_processed()
+    public async Task Handle_should_mark_order_paid_on_success()
     {
-        var payment = new Payment { TransactionReference = _txRef, Status = PaymentStatus.Succeeded };
-        PaymentsAre(payment);
+        var order = OrderWithTotal(100m);
+        GatewayReturns(SuccessResult(order.Reference));
+        WebhookRegistered(true);
+        OrderFound(order);
 
         var result = await CreateHandler().Handle(
-            new HandlePaymentWebhookCommand(_txRef, "success", "{}"),
+            new HandlePaymobWebhookCommand("{}", "hmac"),
             CancellationToken.None);
 
-        result.IsSuccess.Should().BeTrue();
-        payment.Status.Should().Be(PaymentStatus.Succeeded);
-        _payments.Verify(r => r.Update(It.IsAny<Payment>()), Times.Never);
+        result.Should().Be(WebhookOutcome.Processed);
+        order.IsPaid.Should().BeTrue();
+        order.Payment.Should().NotBeNull();
+        order.Payment!.Status.Should().Be(PaymentStatus.Succeeded);
+        order.Payment.TransactionReference.Should().Be("98765");
+        _unitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_should_not_downgrade_succeeded_payment_to_failed()
+    public async Task Handle_should_ignore_success_webhook_with_amount_mismatch()
     {
-        var payment = new Payment { TransactionReference = _txRef, Status = PaymentStatus.Succeeded };
-        PaymentsAre(payment);
+        var order = OrderWithTotal(100m);
+        GatewayReturns(SuccessResult(order.Reference, amountCents: 9500));
+        WebhookRegistered(true);
+        OrderFound(order);
 
-        await CreateHandler().Handle(
-            new HandlePaymentWebhookCommand(_txRef, "failed", "{}"),
+        var result = await CreateHandler().Handle(
+            new HandlePaymobWebhookCommand("{}", "hmac"),
             CancellationToken.None);
 
-        payment.Status.Should().Be(PaymentStatus.Succeeded);
-        _payments.Verify(r => r.Update(It.IsAny<Payment>()), Times.Never);
+        result.Should().Be(WebhookOutcome.Ignored);
+        order.Payment.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Handle_should_mark_payment_failed_when_not_success_and_not_pending()
+    {
+        var order = OrderWithTotal(100m);
+        GatewayReturns(new PaymentWebhookResult { TransactionId = 111, OrderReference = order.Reference, Success = false, Pending = false });
+        WebhookRegistered(true);
+        OrderFound(order);
+
+        var result = await CreateHandler().Handle(
+            new HandlePaymobWebhookCommand("{}", "hmac"),
+            CancellationToken.None);
+
+        result.Should().Be(WebhookOutcome.Processed);
+        order.Payment.Should().NotBeNull();
+        order.Payment!.Status.Should().Be(PaymentStatus.Failed);
+    }
+
+    [Fact]
+    public async Task Handle_should_mark_order_payment_as_refunded()
+    {
+        var order = OrderWithTotal(100m);
+        GatewayReturns(new PaymentWebhookResult { TransactionId = 222, OrderReference = order.Reference, IsRefunded = true });
+        WebhookRegistered(true);
+        OrderFound(order);
+
+        var result = await CreateHandler().Handle(
+            new HandlePaymobWebhookCommand("{}", "hmac"),
+            CancellationToken.None);
+
+        result.Should().Be(WebhookOutcome.Processed);
+        order.Payment.Should().NotBeNull();
+        order.Payment!.Status.Should().Be(PaymentStatus.Refunded);
     }
 }

@@ -18,7 +18,7 @@ namespace Matgar.Api
 
             try
             {
-
+                DotNetEnv.Env.TraversePath().Load();
                 var builder = WebApplication.CreateBuilder(args);
 
                 builder.AddSerilogLogging();

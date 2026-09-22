@@ -1,7 +1,7 @@
 using Matgar.Application.Common.Results;
 using Matgar.Application.Features.Notifications.Commands.MarkRead;
-using Matgar.Application.Abstractions.Repositories;
 using MediatR;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 
 namespace Matgar.Application.Features.Notifications.Handlers
 {

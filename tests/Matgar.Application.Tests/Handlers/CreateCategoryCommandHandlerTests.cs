@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
-using Matgar.Application.Common.Caching;
+using Matgar.Application.Abstractions.Caching;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Features.Category.Commands.CreateCategory;
 
 namespace Matgar.Application.Tests.Handlers;

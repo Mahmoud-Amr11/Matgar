@@ -1,6 +1,6 @@
 using Dapper;
-using Matgar.Application.Abstractions.Dapper;
-using Matgar.Application.Abstractions.Queries.Orders;
+using Matgar.Application.Abstractions.Persistence.Dapper;
+using Matgar.Application.Abstractions.Persistence.Queries.Orders;
 using Matgar.Application.Common.Pagination;
 using Matgar.Application.Features.Orders.Queries.GetAllOrders;
 using Matgar.Application.Features.Orders.Queries.GetOrderById;

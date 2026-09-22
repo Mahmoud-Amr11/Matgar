@@ -1,4 +1,4 @@
-﻿using Matgar.Application.Common.Caching;
+﻿using Matgar.Application.Abstractions.Caching;
 using Matgar.Application.Common.Pagination;
 using Matgar.Application.Features.Products.Queries.Responses;
 

@@ -1,4 +1,4 @@
-﻿using Matgar.Application.Abstractions.Queries.Products;
+﻿using Matgar.Application.Abstractions.Persistence.Queries.Products;
 using Matgar.Application.Common.Results;
 using Matgar.Application.Features.Products.Queries.Responses;
 using MediatR;

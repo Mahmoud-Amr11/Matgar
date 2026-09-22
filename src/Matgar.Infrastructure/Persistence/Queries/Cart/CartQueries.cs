@@ -1,6 +1,6 @@
 using Dapper;
-using Matgar.Application.Abstractions.Dapper;
-using Matgar.Application.Abstractions.Queries.Cart;
+using Matgar.Application.Abstractions.Persistence.Dapper;
+using Matgar.Application.Abstractions.Persistence.Queries.Cart;
 using Matgar.Application.Features.Cart.Queries.Responses;
 
 namespace Matgar.Infrastructure.Persistence.Queries.Cart

@@ -1,6 +1,7 @@
+using Matgar.Application.Abstractions.Caching;
 using Matgar.Application.Abstractions.Identity;
-using Matgar.Application.Abstractions.Queries.ProductReview;
-using Matgar.Application.Common.Caching;
+using Matgar.Application.Abstractions.Persistence.Queries.ProductReview;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Features.ProductReview.Commands.CreateProductReview;
 
 namespace Matgar.Application.Tests.Handlers;

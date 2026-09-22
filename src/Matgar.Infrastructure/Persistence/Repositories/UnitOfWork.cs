@@ -1,4 +1,4 @@
-﻿using Matgar.Application.Abstractions.Repositories;
+﻿using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Domain.Entities;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -45,13 +45,17 @@ namespace Matgar.Infrastructure.Persistence.Repositories
         public ICouponRepository Coupons =>
             _coupons ??= new CouponRepository(_context);
 
+        private IOrderRepository? _orders;
+        public IOrderRepository Orders =>
+            _orders ??= new OrderRepository(_context);
+
+        private IProcessedWebhookRepository? _processedWebhooks;
+        public IProcessedWebhookRepository ProcessedWebhooks =>
+            _processedWebhooks ??= new ProcessedWebhookRepository(_context);
+
         private IGenericRepository<StockItem>? _stockItems;
         public IGenericRepository<StockItem> StockItems =>
             _stockItems ??= new GenericRepository<StockItem>(_context);
-
-        private IGenericRepository<Order>? _orders;
-        public IGenericRepository<Order> Orders =>
-            _orders ??= new GenericRepository<Order>(_context);
 
         private IGenericRepository<OrderItem>? _orderItems;
         public IGenericRepository<OrderItem> OrderItems =>

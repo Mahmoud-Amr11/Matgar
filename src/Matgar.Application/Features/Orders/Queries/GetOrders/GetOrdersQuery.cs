@@ -1,7 +1,7 @@
 using MediatR;
 using Matgar.Application.Common.Results;
-using Matgar.Application.Common.Caching;
 using Matgar.Application.Common.Pagination;
+using Matgar.Application.Abstractions.Caching;
 
 namespace Matgar.Application.Features.Orders.Queries.GetOrders
 {

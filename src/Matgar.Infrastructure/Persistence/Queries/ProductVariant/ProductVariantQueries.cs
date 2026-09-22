@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using Matgar.Application.Abstractions.Dapper;
-using Matgar.Application.Abstractions.Queries.ProductVariant;
+using Matgar.Application.Abstractions.Persistence.Dapper;
+using Matgar.Application.Abstractions.Persistence.Queries.ProductVariant;
 using Matgar.Application.Features.ProductVariant.Queries.Responses;
 
 namespace Matgar.Infrastructure.Persistence.Queries.ProductVariant

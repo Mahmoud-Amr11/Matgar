@@ -1,17 +1,17 @@
 using Matgar.Application.Abstractions.Identity;
-using Matgar.Application.Abstractions.Repositories;
-using Matgar.Application.Common.Results;
+using Matgar.Application.Abstractions.Persistence.Queries.Orders;
 using Matgar.Application.Common.Pagination;
+using Matgar.Application.Common.Results;
 using MediatR;
 
 namespace Matgar.Application.Features.Orders.Queries.GetOrders
 {
     public class GetOrdersQueryHandler : IRequestHandler<GetOrdersQuery, Result<PagedResult<OrderResponse>>>
     {
-        private readonly Matgar.Application.Abstractions.Queries.Orders.IOrderQueries _orderQueries;
+        private readonly IOrderQueries _orderQueries;
         private readonly ICurrentUserService _currentUser;
 
-        public GetOrdersQueryHandler(Matgar.Application.Abstractions.Queries.Orders.IOrderQueries orderQueries, ICurrentUserService currentUser)
+        public GetOrdersQueryHandler(IOrderQueries orderQueries, ICurrentUserService currentUser)
         {
             _orderQueries = orderQueries;
             _currentUser = currentUser;

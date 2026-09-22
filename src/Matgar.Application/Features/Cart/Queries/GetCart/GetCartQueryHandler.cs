@@ -1,5 +1,5 @@
 using Matgar.Application.Abstractions.Identity;
-using Matgar.Application.Abstractions.Queries.Cart;
+using Matgar.Application.Abstractions.Persistence.Queries.Cart;
 using Matgar.Application.Common.Results;
 using MediatR;
 

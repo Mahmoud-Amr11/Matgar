@@ -1,7 +1,7 @@
 ﻿using Hangfire;
 using Matgar.Api.HealthChecks;
 using Matgar.Infrastructure;
-using Matgar.Infrastructure.Services;
+using Matgar.Infrastructure.Persistence.Outbox;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;

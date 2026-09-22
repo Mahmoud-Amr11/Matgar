@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Matgar.Application.Abstractions.Identity;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Features.Orders.Commands.Checkout;
 
 namespace Matgar.Application.Tests.Handlers;
@@ -12,7 +13,7 @@ public class CheckoutCommandHandlerTests
     private readonly Mock<IGenericRepository<StockItem>> _stockItems = new();
     private readonly Mock<ICouponRepository> _coupons = new();
     private readonly Mock<IGenericRepository<Address>> _addresses = new();
-    private readonly Mock<IGenericRepository<Order>> _orders = new();
+    private readonly Mock<IOrderRepository> _orders = new();
     private readonly Mock<IGenericRepository<OutboxMessage>> _outbox = new();
 
     private Mock<IUnitOfWork> CreateUnitOfWork()

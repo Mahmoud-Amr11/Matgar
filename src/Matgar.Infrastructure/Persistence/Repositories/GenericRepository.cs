@@ -1,4 +1,4 @@
-﻿using Matgar.Application.Abstractions.Repositories;
+﻿using Matgar.Application.Abstractions.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

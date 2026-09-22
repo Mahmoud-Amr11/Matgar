@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Matgar.Application.Abstractions.Identity;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Features.Orders.Commands.UpdateVendorOrderStatus;
 
 namespace Matgar.Application.Tests.Handlers;
@@ -10,7 +11,7 @@ public class UpdateVendorOrderStatusCommandHandlerTests
     private readonly Guid _orderId = Guid.NewGuid();
     private readonly Guid _variantId = Guid.NewGuid();
     private readonly Guid _productId = Guid.NewGuid();
-    private readonly Mock<IGenericRepository<Order>> _orders = new();
+    private readonly Mock<IOrderRepository> _orders = new();
     private readonly Mock<IGenericRepository<OrderItem>> _orderItems = new();
     private readonly Mock<IProductVariantRepository> _variants = new();
     private readonly Mock<IProductRepository> _products = new();

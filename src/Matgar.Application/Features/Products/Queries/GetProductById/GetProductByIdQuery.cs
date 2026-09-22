@@ -1,4 +1,4 @@
-﻿using Matgar.Application.Common.Caching;
+﻿using Matgar.Application.Abstractions.Caching;
 using Matgar.Application.Features.Products.Queries.Responses;
 
 namespace Matgar.Application.Features.Products.Queries.GetProductById

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Matgar.Domain.Entities.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Matgar.Domain.Entities
 {

@@ -12,6 +12,8 @@ namespace Matgar.Infrastructure.Persistence.Configurations
 
             builder.HasKey(r => r.Id);
 
+            builder.HasQueryFilter(r => !r.Product.IsDeleted);
+
             builder.Property(r => r.Rating)
                 .IsRequired();
 

@@ -1,4 +1,4 @@
-﻿using Matgar.Application.Abstractions.Dapper;
+﻿using Matgar.Application.Abstractions.Persistence.Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;

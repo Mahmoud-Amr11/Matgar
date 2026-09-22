@@ -1,4 +1,4 @@
-﻿using Matgar.Application.Common.Caching;
+﻿using Matgar.Application.Abstractions.Caching;
 using Matgar.Application.Common.Results;
 using MediatR;
 

@@ -4,6 +4,7 @@ using Matgar.Application.DTOs.Authentication;
 using Matgar.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Security.Claims;
 using System.Text;
 
 namespace Matgar.Infrastructure.Identity.Services
@@ -144,6 +145,10 @@ namespace Matgar.Infrastructure.Identity.Services
         {
             var roles = await _userManager.GetRolesAsync(user);
             var claims = await _userManager.GetClaimsAsync(user);
+
+            claims.Add(new Claim(
+                ClaimTypes.Name,
+                $"{user.FirstName} {user.LastName}".Trim()));
 
             return new AccessTokenUserDto(user.Id, user.Email!, roles, claims);
         }

@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using Matgar.Application.Abstractions.Dapper;
-using Matgar.Application.Abstractions.Queries.Products;
+using Matgar.Application.Abstractions.Persistence.Dapper;
+using Matgar.Application.Abstractions.Persistence.Queries.Products;
 using Matgar.Application.Common.Pagination;
 using Matgar.Application.Features.Products.Queries.Responses;
 

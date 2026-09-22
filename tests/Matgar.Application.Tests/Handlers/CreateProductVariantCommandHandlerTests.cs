@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
+using Matgar.Application.Abstractions.Caching;
 using Matgar.Application.Abstractions.Identity;
-using Matgar.Application.Common.Caching;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Features.ProductVariant.Commands.CreateProductVariant;
 
 namespace Matgar.Application.Tests.Handlers;

@@ -1,5 +1,6 @@
+using Matgar.Application.Abstractions.Caching;
 using Matgar.Application.Abstractions.Identity;
-using Matgar.Application.Common.Caching;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Features.Products.Commands.ApproveProduct;
 using Matgar.Application.Features.Products.Commands.SubmitProductForReview;
 using Matgar.Application.Features.Products.Commands.SuspendProduct;

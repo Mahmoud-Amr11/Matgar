@@ -1,5 +1,5 @@
 using Matgar.Application.Abstractions.Identity;
-using Matgar.Application.Abstractions.Repositories;
+using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Common.Results;
 using MediatR;
 

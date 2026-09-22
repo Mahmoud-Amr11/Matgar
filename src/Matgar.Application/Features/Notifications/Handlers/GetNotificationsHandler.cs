@@ -1,8 +1,8 @@
 using Matgar.Application.Common.Results;
 using Matgar.Application.Features.Notifications.Queries.GetNotifications;
-using Matgar.Application.Abstractions.Queries.Notifications;
 using MediatR;
 using Matgar.Application.Abstractions.Identity;
+using Matgar.Application.Abstractions.Persistence.Queries.Notifications;
 
 namespace Matgar.Application.Features.Notifications.Handlers
 {
