@@ -19,6 +19,7 @@ using Matgar.Infrastructure.Identity.Entities;
 using Matgar.Infrastructure.Identity.Services;
 using Matgar.Infrastructure.Options;
 using Matgar.Infrastructure.Otions;
+using Matgar.Infrastructure.Payments;
 using Matgar.Infrastructure.Persistence.Contexts;
 using Matgar.Infrastructure.Persistence.Dapper;
 using Matgar.Infrastructure.Persistence.Interceptor;

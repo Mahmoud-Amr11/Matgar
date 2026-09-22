@@ -1,5 +1,5 @@
 ﻿using Matgar.Application.Abstractions.Services;
-using Matgar.Application.DTOs.Payments;
+using Matgar.Application.Features.Payments.PaymentDtos;
 using Matgar.Infrastructure.Otions;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace Matgar.Infrastructure.Services
+namespace Matgar.Infrastructure.Payments
 {
     internal class PaymobPaymentGateway : IPaymentGateway
     {
@@ -36,8 +36,8 @@ namespace Matgar.Infrastructure.Services
 
                 payment_methods = new[]
                 {
-            _options.IntegrationId
-        },
+                     _options.IntegrationId
+                },
 
                 items = request.Items.Select(item => new
                 {

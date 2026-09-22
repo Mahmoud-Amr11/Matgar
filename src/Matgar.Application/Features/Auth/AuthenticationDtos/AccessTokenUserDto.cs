@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Matgar.Application.DTOs.Authentication
+namespace Matgar.Application.Features.Auth.AuthenticationDtos
 {
     public sealed record AccessTokenUserDto(
        string UserId,

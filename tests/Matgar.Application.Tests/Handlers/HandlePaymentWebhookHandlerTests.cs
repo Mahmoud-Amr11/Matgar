@@ -1,7 +1,7 @@
 using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Abstractions.Services;
-using Matgar.Application.DTOs.Payments;
 using Matgar.Application.Features.Payments.Commands.HandlePaymobWebhook;
+using Matgar.Application.Features.Payments.PaymentDtos;
 using Microsoft.Extensions.Logging;
 
 namespace Matgar.Application.Tests.Handlers;

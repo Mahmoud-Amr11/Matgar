@@ -1,4 +1,4 @@
-﻿using Matgar.Application.DTOs.Authentication;
+﻿using Matgar.Application.Features.Auth.AuthenticationDtos;
 
 namespace Matgar.Application.Abstractions.Identity
 {

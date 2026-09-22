@@ -1,5 +1,5 @@
 ﻿using Matgar.Application.Abstractions.Identity;
-using Matgar.Application.DTOs.Authentication;
+using Matgar.Application.Features.Auth.AuthenticationDtos;
 using Matgar.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

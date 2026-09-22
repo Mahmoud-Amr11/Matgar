@@ -2,8 +2,8 @@
 using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Common.Enums;
 using Matgar.Application.Common.Results;
-using Matgar.Application.DTOs.Authentication;
 using Matgar.Application.Events;
+using Matgar.Application.Features.Auth.AuthenticationDtos;
 using Matgar.Domain.Entities;
 using MediatR;
 using System.Text.Json;

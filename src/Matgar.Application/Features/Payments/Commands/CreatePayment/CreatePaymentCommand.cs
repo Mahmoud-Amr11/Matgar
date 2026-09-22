@@ -1,5 +1,5 @@
 ﻿using Matgar.Application.Common.Results;
-using Matgar.Application.DTOs.Payments;
+using Matgar.Application.Features.Payments.PaymentDtos;
 using MediatR;
 
 namespace Matgar.Application.Features.Payments.Commands.CreatePayment

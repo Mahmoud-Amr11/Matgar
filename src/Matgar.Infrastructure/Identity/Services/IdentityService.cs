@@ -1,6 +1,6 @@
 ﻿using Matgar.Application.Abstractions.Identity;
 using Matgar.Application.Common.Results;
-using Matgar.Application.DTOs.Authentication;
+using Matgar.Application.Features.Auth.AuthenticationDtos;
 using Matgar.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;

@@ -2,7 +2,8 @@
 using Matgar.Application.Abstractions.Persistence.Repositories;
 using Matgar.Application.Abstractions.Services;
 using Matgar.Application.Common.Results;
-using Matgar.Application.DTOs.Payments;
+using Matgar.Application.Features.Payments.PaymentDtos;
+using Matgar.Domain.Entities;
 using MediatR;
 
 namespace Matgar.Application.Features.Payments.Commands.CreatePayment
@@ -35,6 +36,9 @@ namespace Matgar.Application.Features.Payments.Commands.CreatePayment
             if (order.IsPaid)
                 return Error.Conflict(code: "Payment.AlreadyPaid", message: "Order already paid.");
 
+
+
+
             var customerName = (_currentUser.UserName?.Trim()
                 ?? _currentUser.UserEmail?.Split('@')[0]
                 ?? "Guest")
@@ -44,6 +48,29 @@ namespace Matgar.Application.Features.Payments.Commands.CreatePayment
             var lastName = firstName.Length < customerName.Length
                 ? customerName[(firstName.Length + 1)..]
                 : "Customer";
+
+            var existingPayment =
+                order.Payment;
+
+            if (existingPayment is not null &&
+       existingPayment.IdempotencyKey == cmd.IdempotencyKey)
+            {
+                return Error.Conflict(
+                    code: "Payment.AlreadyCreated",
+                    message: "A payment already exists for this request.");
+            }
+            var payment = new Payment
+            {
+                Id = Guid.NewGuid(),
+                OrderId = order.Id,
+                Provider = PaymentProvider.Paymob,
+                Amount = order.Total,
+                Currency = "EGP",
+                Status = PaymentStatus.Pending,
+                IdempotencyKey = cmd.IdempotencyKey
+            };
+
+
 
             var request = new PaymentRequest
             {
@@ -63,7 +90,21 @@ namespace Matgar.Application.Features.Payments.Commands.CreatePayment
                 }).ToList()
             };
 
+
+
+
             var result = await _gateway.CreatePaymentAsync(request, ct);
+
+            payment.ProviderPaymentId =
+             result.IntentionId;
+
+            payment.ProviderOrderId =
+                result.PaymobOrderId;
+
+            await _unitOfWork.Payments.AddAsync(payment, ct);
+            await _unitOfWork.SaveChangesAsync(ct);
+
+
             return Result<PaymentResult>.Success(result);
         }
     }

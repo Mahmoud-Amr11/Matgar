@@ -1,4 +1,4 @@
-﻿using Matgar.Application.DTOs.Payments;
+﻿using Matgar.Application.Features.Payments.PaymentDtos;
 
 namespace Matgar.Application.Abstractions.Services
 {

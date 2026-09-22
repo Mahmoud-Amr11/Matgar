@@ -1,7 +1,7 @@
 using Matgar.Api.Common;
-using Matgar.Application.DTOs.Payments;
 using Matgar.Application.Features.Payments.Commands.CreatePayment;
 using Matgar.Application.Features.Payments.Commands.HandlePaymobWebhook;
+using Matgar.Application.Features.Payments.PaymentDtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿namespace Matgar.Application.DTOs.Payments
+﻿namespace Matgar.Application.Features.Payments.PaymentDtos
 {
     public sealed class PaymentItem
     {

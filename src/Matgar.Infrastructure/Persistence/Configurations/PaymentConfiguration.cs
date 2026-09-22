@@ -28,10 +28,14 @@ namespace Matgar.Infrastructure.Persistence.Configurations
 
             builder.Property(p => p.TransactionReference)
                 .HasMaxLength(200);
-          
-            builder.HasIndex(p => p.TransactionReference)
+
+            builder.HasIndex(x => new
+            {
+                x.OrderId,
+                x.IdempotencyKey
+            })
                 .IsUnique()
-                .HasFilter("[TransactionReference] IS NOT NULL");
+                .HasFilter("[IdempotencyKey] IS NOT NULL");
 
             builder.Property(p => p.FailureReason)
                 .HasMaxLength(500);
